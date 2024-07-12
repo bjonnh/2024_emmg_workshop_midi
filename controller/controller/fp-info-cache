@@ -1,4 +1,4 @@
-23635143902932916
+23636864740161889
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -64357,6 +64357,13 @@ PAD_Touch_bjo
 0
 1
 1
+MIDI_projects
+Potentiometer_Alps_RK09K_Single_Vertical
+113004U 1130A6S 11300DR 1130A8G 1130081 1130A5R 1130AP5 1130AST  D1130C3W D1130C1B D1130C3C D1130C2P Potentiometer, vertical, Alps RK09K Single, https://tech.alpsalpine.com/prod/e/pdf/potentiometer/rotarypotentiometers/rk09k/rk09k.pdf
+Potentiometer vertical Alps RK09K RK09D Single Snapin
+0
+5
+4
 MIDI_projects
 RPi_Pico_Holes_
 Through hole straight pin header, 2x20, 2.54mm pitch, double rows

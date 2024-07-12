@@ -923,13 +923,13 @@
 	)
 	(wire
 		(pts
-			(xy 100.33 100.33) (xy 100.33 95.25)
+			(xy 100.33 95.25) (xy 100.33 100.33)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "0a40a2ec-68d0-4e1f-a967-cbdb4eca9979")
+		(uuid "08d0eec4-7916-4006-b427-b4357d201cf8")
 	)
 	(wire
 		(pts
@@ -943,23 +943,13 @@
 	)
 	(wire
 		(pts
-			(xy 121.92 105.41) (xy 144.78 105.41)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "28630397-81d1-4241-bb63-06e07552752e")
-	)
-	(wire
-		(pts
 			(xy 110.49 85.09) (xy 144.78 85.09)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "4600f6fe-7a3f-42cc-ba34-d73b22de000c")
+		(uuid "26392c03-175d-48d1-820f-a5b974f95c0a")
 	)
 	(wire
 		(pts
@@ -973,6 +963,16 @@
 	)
 	(wire
 		(pts
+			(xy 100.33 100.33) (xy 144.78 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5d54d40c-954f-408e-888a-fe9bb3bf7c94")
+	)
+	(wire
+		(pts
 			(xy 90.17 105.41) (xy 90.17 102.87)
 		)
 		(stroke
@@ -983,23 +983,23 @@
 	)
 	(wire
 		(pts
-			(xy 100.33 100.33) (xy 144.78 100.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b6587ec4-0145-420d-85aa-493a6acbfba2")
-	)
-	(wire
-		(pts
 			(xy 144.78 85.09) (xy 144.78 97.79)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "e986137c-718a-4644-a240-7bc5bf9fe659")
+		(uuid "6a32daf9-6eef-4e57-865d-ebad97547f04")
+	)
+	(wire
+		(pts
+			(xy 121.92 105.41) (xy 144.78 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9700c7cc-589c-4600-a406-53126164cbc6")
 	)
 	(wire
 		(pts
@@ -1357,7 +1357,7 @@
 				)
 			)
 		)
-		(property "Footprint" "SJ-3524-SMT:CUI_SJ-3524-SMT"
+		(property "Footprint" "MIDI_projects:CUI_SJ-3524-SMT"
 			(at 155.194 92.71 0)
 			(effects
 				(font
@@ -1445,12 +1445,12 @@
 	(symbol
 		(lib_id "power:GND")
 		(at 110.49 85.09 0)
+		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "b17e4c63-792c-48b5-86bb-bfff0e8ce43b")
 		(property "Reference" "#PWR010"
 			(at 110.49 91.44 0)

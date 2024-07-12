@@ -4,6 +4,11 @@
 	(generator_version "8.0")
 	(uuid "3acbb1c1-c637-462c-af9e-3f63db2c37c2")
 	(paper "A4")
+	(title_block
+		(title "EMMG Midi controller")
+		(rev "1")
+		(company "bjonnh.net")
+	)
 	(lib_symbols
 		(symbol "74xx:74HC4051"
 			(exclude_from_sim no)
@@ -3665,7 +3670,7 @@
 		)
 		(uuid "1121b350-281d-4a0b-a334-e7b7635c01fc")
 	)
-	(label "TPAD8"
+	(label "TPAD10"
 		(at 167.64 100.33 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3687,7 +3692,7 @@
 		)
 		(uuid "17a632c7-2d3f-418f-9ac2-23de1ad24da7")
 	)
-	(label "TPAD10"
+	(label "TPAD5"
 		(at 167.64 115.57 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3808,7 +3813,7 @@
 		)
 		(uuid "34af30ac-38ce-4b85-9fde-59fa997ba0b7")
 	)
-	(label "POT3"
+	(label "POT2"
 		(at 252.73 82.55 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3819,7 +3824,7 @@
 		)
 		(uuid "3671a24e-8338-449a-bc1e-8d5f517ea06e")
 	)
-	(label "TPAD9"
+	(label "TPAD1"
 		(at 167.64 113.03 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3874,7 +3879,7 @@
 		)
 		(uuid "5479fdf7-4dea-4e07-ad47-e59e8b11942e")
 	)
-	(label "TPAD3"
+	(label "TPAD11"
 		(at 167.64 90.17 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3929,7 +3934,7 @@
 		)
 		(uuid "6d0bd4fc-dff4-402a-a743-eca3d0b1d47f")
 	)
-	(label "TPAD11"
+	(label "TPAD4"
 		(at 212.09 115.57 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3973,7 +3978,7 @@
 		)
 		(uuid "810a6e17-f02e-4980-893a-833b337cfc35")
 	)
-	(label "TPAD5"
+	(label "TPAD9"
 		(at 167.64 107.95 0)
 		(fields_autoplaced yes)
 		(effects
@@ -4061,7 +4066,7 @@
 		)
 		(uuid "9ff65d63-895a-446f-9961-b737f3af6fee")
 	)
-	(label "TPAD7"
+	(label "TPAD2"
 		(at 167.64 102.87 0)
 		(fields_autoplaced yes)
 		(effects
@@ -4083,7 +4088,7 @@
 		)
 		(uuid "a5e8f0f0-f629-449d-a2f3-6fda5efb8afa")
 	)
-	(label "POT2"
+	(label "POT3"
 		(at 252.73 95.25 0)
 		(fields_autoplaced yes)
 		(effects
@@ -4171,7 +4176,7 @@
 		)
 		(uuid "c9d7fea6-880d-42ea-98d4-93169420646f")
 	)
-	(label "TPAD2"
+	(label "TPAD3"
 		(at 167.64 92.71 0)
 		(fields_autoplaced yes)
 		(effects
@@ -4193,7 +4198,18 @@
 		)
 		(uuid "d6d622c1-7f1a-405a-82c0-e4e704d802c3")
 	)
-	(label "TPAD1"
+	(label "AIN"
+		(at 222.25 82.55 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e30c3d14-db04-4bd4-a391-3e49ec2f6daa")
+	)
+	(label "TPAD7"
 		(at 167.64 95.25 0)
 		(fields_autoplaced yes)
 		(effects
@@ -4204,7 +4220,7 @@
 		)
 		(uuid "e5a18bd6-f514-4a93-b86c-a1ab071347fe")
 	)
-	(label "TPAD4"
+	(label "TPAD8"
 		(at 167.64 87.63 0)
 		(fields_autoplaced yes)
 		(effects
@@ -4248,7 +4264,7 @@
 		)
 		(uuid "fb70688d-b466-40f2-8340-cfc6005c53e1")
 	)
-	(label "I2S_LRCK"
+	(label "I2S_BCK"
 		(at 210.82 100.33 0)
 		(fields_autoplaced yes)
 		(effects
@@ -5429,7 +5445,7 @@
 				)
 			)
 		)
-		(property "Footprint" "RPi_Pico:RPi_Pico_SMD_TH"
+		(property "Footprint" "MIDI_projects:RPi_Pico_SMD_TH"
 			(at 191.77 91.44 90)
 			(effects
 				(font
