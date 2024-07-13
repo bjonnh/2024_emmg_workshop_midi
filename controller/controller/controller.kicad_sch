@@ -3078,6 +3078,16 @@
 	)
 	(wire
 		(pts
+			(xy 209.55 72.39) (xy 219.71 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4f1c7f7b-d5c8-41da-952d-fb3c4926518f")
+	)
+	(wire
+		(pts
 			(xy 248.92 87.63) (xy 252.73 87.63)
 		)
 		(stroke
@@ -3598,6 +3608,16 @@
 	)
 	(wire
 		(pts
+			(xy 209.55 97.79) (xy 223.52 97.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f8535448-401f-4090-b2a7-d96c0e8479bb")
+	)
+	(wire
+		(pts
 			(xy 22.86 54.61) (xy 30.48 54.61)
 		)
 		(stroke
@@ -3725,7 +3745,7 @@
 		)
 		(uuid "197bdfc9-4c9b-4d9e-a367-28e6dbe95c88")
 	)
-	(label "I2S_BCK"
+	(label "I2S_LRCK"
 		(at 210.82 102.87 0)
 		(fields_autoplaced yes)
 		(effects
@@ -4899,7 +4919,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Potentiometer_THT:Potentiometer_Alps_RK09K_Single_Vertical"
+		(property "Footprint" "MIDI_projects:Potentiometer_Alps_RK09K_Single_Vertical"
 			(at 34.29 97.79 0)
 			(effects
 				(font
@@ -5242,7 +5262,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Potentiometer_THT:Potentiometer_Alps_RK09K_Single_Vertical"
+		(property "Footprint" "MIDI_projects:Potentiometer_Alps_RK09K_Single_Vertical"
 			(at 34.29 119.38 0)
 			(effects
 				(font
@@ -5420,13 +5440,79 @@
 		)
 	)
 	(symbol
-		(lib_id "MIDI_projects:Pico")
-		(at 191.77 91.44 0)
+		(lib_id "power:GND")
+		(at 219.71 72.39 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3ef568dd-97c7-4edf-b89c-1cc36d34649d")
+		(property "Reference" "#PWR049"
+			(at 219.71 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 219.71 77.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 219.71 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 219.71 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 219.71 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5d94c837-a888-48b9-9470-4da4641041cc")
+		)
+		(instances
+			(project "controller"
+				(path "/3acbb1c1-c637-462c-af9e-3f63db2c37c2"
+					(reference "#PWR049")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "MIDI_projects:Pico")
+		(at 191.77 91.44 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "3fedb949-9e44-43ba-8163-07614a21e0d1")
 		(property "Reference" "U3"
@@ -5638,7 +5724,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Potentiometer_THT:Potentiometer_Alps_RK09K_Single_Vertical"
+		(property "Footprint" "MIDI_projects:Potentiometer_Alps_RK09K_Single_Vertical"
 			(at 34.29 54.61 0)
 			(effects
 				(font
@@ -7397,7 +7483,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Potentiometer_THT:Potentiometer_Alps_RK09K_Single_Vertical"
+		(property "Footprint" "MIDI_projects:Potentiometer_Alps_RK09K_Single_Vertical"
 			(at 34.29 139.7 0)
 			(effects
 				(font
@@ -7984,7 +8070,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Potentiometer_THT:Potentiometer_Alps_RK09K_Single_Vertical"
+		(property "Footprint" "MIDI_projects:Potentiometer_Alps_RK09K_Single_Vertical"
 			(at 34.29 160.02 0)
 			(effects
 				(font
@@ -8168,6 +8254,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 223.52 97.79 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b59491cc-bc71-4c5a-9cfb-b568ccf64979")
+		(property "Reference" "#PWR048"
+			(at 223.52 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 223.52 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 223.52 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 223.52 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 223.52 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "eee0b8dc-a6cb-4382-9cef-54be85a26f8c")
+		)
+		(instances
+			(project "controller"
+				(path "/3acbb1c1-c637-462c-af9e-3f63db2c37c2"
+					(reference "#PWR048")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R_Potentiometer")
 		(at 34.29 33.02 0)
 		(mirror y)
@@ -8195,7 +8347,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Potentiometer_THT:Potentiometer_Alps_RK09K_Single_Vertical"
+		(property "Footprint" "MIDI_projects:Potentiometer_Alps_RK09K_Single_Vertical"
 			(at 34.29 33.02 0)
 			(effects
 				(font
@@ -8446,7 +8598,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "be75f20b-46c7-40e1-abf6-5ec271bfba88")
 		(property "Reference" "#PWR09"
 			(at 214.63 81.28 0)
@@ -8458,7 +8609,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 214.63 72.39 0)
+			(at 214.122 73.914 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8734,7 +8885,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Potentiometer_THT:Potentiometer_Alps_RK09K_Single_Vertical"
+		(property "Footprint" "MIDI_projects:Potentiometer_Alps_RK09K_Single_Vertical"
 			(at 34.29 180.34 0)
 			(effects
 				(font
@@ -9458,9 +9609,9 @@
 		(at 236.22 52.07 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "e998e268-6e0a-4f16-99d2-2c6caf4d67dd")
 		(property "Reference" "U4"
 			(at 236.22 52.07 0)
@@ -9704,9 +9855,9 @@
 		(at 73.66 55.88 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "f388cd29-0453-491d-9090-e7d75031a1c5")
 		(property "Reference" "DISP1"
 			(at 78.74 38.1 0)
@@ -10073,7 +10224,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Potentiometer_THT:Potentiometer_Alps_RK09K_Single_Vertical"
+		(property "Footprint" "MIDI_projects:Potentiometer_Alps_RK09K_Single_Vertical"
 			(at 34.29 76.2 0)
 			(effects
 				(font
