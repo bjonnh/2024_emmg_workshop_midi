@@ -58,7 +58,29 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        "silk_over_copper|101682000|24935782|c6a8afb0-dae9-4610-bc49-703d88529988|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|105706000|47405401|4fb40c0e-da3c-4ac3-a70d-bf3bc77e8465|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|110645168|25242000|ffb781fd-64c7-42cc-a9b9-9e3104033f30|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|120946038|31700724|66c82a9e-36c0-4784-a17c-7f1dd6cfc855|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|121000000|35925376|71745b63-164a-4144-bc59-d9a9a8f86b2f|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|123232000|35712500|e214692b-2fe9-4b1a-bfda-ccd366df3dc6|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|99106851|25750000|7233d959-b61f-4492-b658-8c1cfd424b8c|00000000-0000-0000-0000-000000000000",
+        "silk_overlap|100838095|23472438|cfedb84b-13f5-4197-848a-3498914a462f|c8a49df1-d905-4fd0-9ecb-2fc7bb1eb25a",
+        "silk_overlap|100882000|26200000|f27b48ff-b56b-4fb0-9adb-57cc03a1117e|9c26e74b-a4e2-4fcd-b870-957eb388fa84",
+        "silk_overlap|101182000|31719000|66c82a9e-36c0-4784-a17c-7f1dd6cfc855|bcaa75ce-f7c9-43be-86dd-2f38a306d747",
+        "silk_overlap|102738000|24600000|fe353914-516a-4596-baf6-b1228b53b346|ca57b73e-3747-41c8-b27e-990f384c8743",
+        "silk_overlap|106682000|25242000|ffb781fd-64c7-42cc-a9b9-9e3104033f30|a510a062-2072-493e-aa02-a89017ac95fd",
+        "silk_overlap|109515000|25242000|ffb781fd-64c7-42cc-a9b9-9e3104033f30|1c831a8c-6097-4a28-9954-6173d7b73c61",
+        "silk_overlap|110804636|51277000|f5897806-467c-453c-9c58-8841366d8c89|08b3b99e-4417-418e-9fbb-edfc859a5259",
+        "silk_overlap|113450000|31719000|66c82a9e-36c0-4784-a17c-7f1dd6cfc855|187a8c11-60c2-4ea2-807b-d762dc622e58",
+        "silk_overlap|113950000|25242000|ffb781fd-64c7-42cc-a9b9-9e3104033f30|4fd34b26-34c6-4110-bd19-c5b0b8a2ac84",
+        "silk_overlap|116694000|24000000|d17d2c63-cd60-4ea2-9a21-8d3c2ca90dbe|bd7af9e5-f0c9-469a-8d20-f64c9a09b292",
+        "silk_overlap|120965000|35527064|949eb488-972f-4c2c-a528-97d1ed6fbdc3|71745b63-164a-4144-bc59-d9a9a8f86b2f",
+        "silk_overlap|95800000|33289125|d3805945-c225-482a-845f-ca072d31f3b7|753a9533-9eb6-42e4-b52e-c0c6b25199ad",
+        "starved_thermal|121500000|62877589|02e969de-410d-431e-be51-65b02bee52dc|c7ddb479-377e-4924-a081-ae8dc0243a92|B.Cu",
+        "starved_thermal|87580000|66280000|02e969de-410d-431e-be51-65b02bee52dc|ce8bf6c3-a7ce-4faa-8218-90ce419c981c|B.Cu"
+      ],
       "meta": {
         "version": 2
       },
@@ -481,8 +503,8 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
-      "pos_files": "",
+      "plot": "plan2_proto1/",
+      "pos_files": "plan2_proto1/",
       "specctra_dsn": "",
       "step": "",
       "svg": "",
@@ -492,7 +514,7 @@
   },
   "schematic": {
     "annotate_start_num": 0,
-    "bom_export_filename": "",
+    "bom_export_filename": "plan2_proto1/bom.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
@@ -542,11 +564,65 @@
           "label": "DNP",
           "name": "${DNP}",
           "show": true
+        },
+        {
+          "group_by": false,
+          "label": "#",
+          "name": "${ITEM_NUMBER}",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Field6",
+          "name": "Field6",
+          "show": false
+        },
+        {
+          "group_by": true,
+          "label": "LCSC",
+          "name": "LCSC",
+          "show": true
+        },
+        {
+          "group_by": false,
+          "label": "MF",
+          "name": "MF",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "PARTREV",
+          "name": "PARTREV",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "STANDARD",
+          "name": "STANDARD",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Device",
+          "name": "Sim.Device",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Pins",
+          "name": "Sim.Pins",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Description",
+          "name": "Description",
+          "show": false
         }
       ],
       "filter_string": "",
       "group_symbols": true,
-      "name": "Grouped By Value",
+      "name": "",
       "sort_asc": true,
       "sort_field": "Reference"
     },
