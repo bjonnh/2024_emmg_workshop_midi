@@ -30,3 +30,11 @@ class Touch:
                 if not new and self.on_release is not None:
                     self.on_release(i)
                 self.old_touches[i] = new
+
+    def single_touch(self):
+        """Returns the first touch in the order of the pads"""
+        self.tick()
+        for i, touch in enumerate(self.old_touches):
+            if touch:
+                return i
+        return None

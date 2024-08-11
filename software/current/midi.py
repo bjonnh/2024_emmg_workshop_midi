@@ -1,4 +1,5 @@
 import adafruit_midi
+import usb_midi
 import busio
 from adafruit_midi.note_on import NoteOn
 from adafruit_midi.note_off import NoteOff
@@ -14,6 +15,13 @@ class Midi:
             out_channel=(midi_out_channel - 1),
             debug=False,
         )
+
+        self.usb_midi = adafruit_midi.MIDI(
+            midi_in=usb_midi.ports[0],
+            midi_out=usb_midi.ports[1],
+            in_channel=0,
+            out_channel=0,
+        )
         self.on_note_on = None
         self.on_note_off = None
         self.on_cc = None
@@ -27,3 +35,9 @@ class Midi:
             if self.on_note_off is not None:
                 self.on_note_off(msg_in.note, msg_in.velocity)
 
+    def send(self, msg):
+        self.midi.send(msg)
+        self.usb_send(msg)
+
+    def usb_send(self, msg):
+        self.usb_midi.send(msg)

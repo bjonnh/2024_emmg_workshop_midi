@@ -20,3 +20,15 @@ class Display:
         text3 = label.Label(terminalio.FONT, text="Midisynth workshop", x=0, y=54)
         for t in (text1, text2, text3):
             self.maingroup.append(t)
+        self.current_y = 10
+
+    def clear(self):
+        self.current_y = 10
+        for item in range(len(self.maingroup)):
+            self.maingroup.pop()
+
+    def print(self, text):
+        text = label.Label(terminalio.FONT, text=text, x=0, y=self.current_y)
+        self.maingroup.append(text)
+        self.current_y += 15
+
