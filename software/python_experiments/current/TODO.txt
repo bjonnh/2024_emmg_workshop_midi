@@ -1,0 +1,3 @@
+- callbacks for knobs
+- generic class for the full device to ease making new functions
+- sequencer

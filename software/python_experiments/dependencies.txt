@@ -1,0 +1,6 @@
+neopixel
+adafruit_display_text
+adafruit_displayio_ssd1306
+adafruit_midi
+adafruit_debouncer
+adafruit_wave
