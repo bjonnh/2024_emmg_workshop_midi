@@ -29,6 +29,7 @@ class Device {
     void sendControlChange(uint8_t, uint8_t, uint8_t);
     void sendNoteOn(uint8_t, uint8_t, uint8_t);
     void sendNoteOff(uint8_t, uint8_t, uint8_t);
+    void midiPanic();
 
     Display display;
   private:

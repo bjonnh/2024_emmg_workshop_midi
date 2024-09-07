@@ -11,7 +11,8 @@ enum class ControllerModeState {
   NORMAL,
   SETUP_MENU,
   CONTROLLER_SETUP,
-  PAD_SETUP
+  PAD_SETUP, 
+  PANIC
 };
 
 class SetupMenuState {

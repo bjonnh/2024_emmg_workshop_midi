@@ -7,12 +7,14 @@ ControllerMode* ControllerModeInstance = nullptr;
 
 
 void SetupMenuState::setFromKnob(uint8_t value) {
-  if (value < 40)
+  if (value < 20)
     selected_state = ControllerModeState::NORMAL;
-  else if (value < 80)
+  else if (value < 60)
     selected_state = ControllerModeState::CONTROLLER_SETUP;
-  else
+  else if (value < 100)
     selected_state = ControllerModeState::PAD_SETUP;
+  else
+    selected_state = ControllerModeState::PANIC;
 }
 
 Controller::Controller(uint8_t cc, uint8_t channel)
@@ -122,6 +124,10 @@ void ControllerMode::onButtonChange(uint8_t id, uint8_t value) {
             controller_setup_state.channel = controllers[controller_setup_state.controller].channel;
           }
         }
+        if (current_state == ControllerModeState::PANIC) {
+          device.midiPanic();
+          current_state = ControllerModeState::NORMAL;
+        }
         break;
       case ControllerModeState::CONTROLLER_SETUP:
         if (controller_setup_state.controller == 8) {
@@ -185,6 +191,9 @@ void ControllerMode::display_setup_menu() {
       break;
     case ControllerModeState::PAD_SETUP:
       device.display.adisplay.print("Pad");
+      break;
+    case ControllerModeState::PANIC:
+      device.display.adisplay.print("PANIC!");
       break;
   }
   device.display.adisplay.display();

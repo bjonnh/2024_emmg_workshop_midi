@@ -123,3 +123,10 @@ void Device::sendNoteOff(uint8_t index, uint8_t value, uint8_t channel) {
   MIDI.sendNoteOff(index, value, channel);
   MIDI_1.sendNoteOn(index, value, channel);
 }
+
+void Device::midiPanic() {
+  for (int i=0; i<16;i++) {
+    MIDI.sendControlChange(123, 0, i);
+    MIDI_1.sendControlChange(123, 0, i);
+  }
+}
