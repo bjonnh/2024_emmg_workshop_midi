@@ -51,7 +51,7 @@ void Storage::erase() {
 
   for (int i = sizeof(signature); i < memory_size; i++)
     EEPROM.write(i, 0);
-  EEPROM.write(offset_settings_size, SETTINGS_SIZE);  // Careful if you make the settings large than 255
+  EEPROM.write(offset_settings_size, SETTINGS_SIZE);  // Careful if you make the settings larger than 255
 
   EEPROM.commit();
 }

@@ -17,31 +17,49 @@
 #include "config.h"
 
 
-#define SETTINGS_SIZE 2*NUMBER_OF_KNOBS + 2*NUMBER_OF_PADS
+#define SETTINGS_SIZE 255
 
 class Controller {
-  public:
-    Controller() {};
-    Controller(uint8_t cc, uint8_t channel);
-    uint8_t cc = 0;
-    uint8_t channel = 1;
+public:
+  Controller(){};
+  Controller(uint8_t cc, uint8_t channel);
+  uint8_t cc = 0;
+  uint8_t channel = 1;
+};
+
+
+enum class PadType : uint8_t {
+  NOTE,
+  CC,
+  CC_LATCH
+};
+
+constexpr const char* to_string(PadType type) {
+  switch (type) {
+    case PadType::NOTE: return "Note";
+    case PadType::CC: return "CC";
+    case PadType::CC_LATCH: return "CCL";
+    default: return "Unknown";
+  }
 };
 
 class Pad {
-  public:
-    Pad() {};
-    Pad(uint8_t note, uint8_t channel);
-    uint8_t note = 0;
-    uint8_t channel = 1;
+public:
+  Pad(){};
+  Pad(uint8_t cc, uint8_t channel, uint8_t current, PadType type);
+  uint8_t cc = 0;  // we call it cc but it can be a note too
+  uint8_t channel = 1;
+  uint8_t current = 0; // Used for latching
+  PadType type = PadType::NOTE;
 };
 
 class ControllerSettings {
-  public:
-    void saveToArray(uint8_t* arr);
-    void loadFromArray(const uint8_t* arr);
+public:
+  void saveToArray(uint8_t* arr);
+  void loadFromArray(const uint8_t* arr);
 
-    Controller controllers[NUMBER_OF_KNOBS];
-    Pad pads[NUMBER_OF_PADS];
+  Controller controllers[NUMBER_OF_KNOBS];
+  Pad pads[NUMBER_OF_PADS];
 };
 
-#endif // EMMG_CONTROLLER_SETTINGS_H
+#endif  // EMMG_CONTROLLER_SETTINGS_H

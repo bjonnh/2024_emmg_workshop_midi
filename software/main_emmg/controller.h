@@ -13,6 +13,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include "controllersettings.h"
 #include "device.h"
 #include "display.h"
 #include "storage.h"
@@ -37,15 +38,13 @@ public:
 class ControllerSetupState {
 public:
   uint8_t controller = 0;
-  uint8_t cc = 0;
-  uint8_t channel = 0;
+  Controller settings;
 };
 
 class PadSetupState {
 public:
   uint8_t pad = 0;
-  uint8_t note = 0;
-  uint8_t channel = 0;
+  Pad settings;
 };
 
 

@@ -11,12 +11,13 @@
  */
 
 #include "controllersettings.h"
+#include "debug.h"
 
 Controller::Controller(uint8_t cc, uint8_t channel)
   : cc(cc), channel(channel){};
 
-Pad::Pad(uint8_t note, uint8_t channel)
-  : note(note), channel(channel){};
+Pad::Pad(uint8_t cc, uint8_t channel, uint8_t current, PadType type)
+  : cc(cc), channel(channel), current(0), type(type){};
 
 void ControllerSettings::saveToArray(uint8_t* arr) {
   // We store the knobs at 0
@@ -26,8 +27,9 @@ void ControllerSettings::saveToArray(uint8_t* arr) {
   }
   // We store the pads at 128
   for (int i = 0; i < NUMBER_OF_PADS; i++) {
-    arr[128 + i * 2] = pads[i].note;
-    arr[128 + i * 2 + 1] = pads[i].channel;
+    arr[128 + i * 3] = pads[i].cc;
+    arr[128 + i * 3 + 1] = pads[i].channel;
+    arr[128 + i * 3 + 2] = static_cast<uint8_t>(pads[i].type);
   }
 }
 
@@ -40,7 +42,18 @@ void ControllerSettings::loadFromArray(const uint8_t* arr) {
 
   // Load pad settings
   for (int i = 0; i < NUMBER_OF_PADS; i++) {
-    pads[i].note = arr[128 + i * 2];
-    pads[i].channel = arr[128 + i * 2 + 1];
+    pads[i].cc = arr[128 + i * 3];
+    pads[i].channel = arr[128 + i * 3 + 1];
+    pads[i].type = static_cast<PadType>(arr[128 + i * 3 + 2]);
+    SERIAL_PRINT("Pad ");
+    SERIAL_PRINTLN(i);
+    SERIAL_PRINT("CC "); 
+    SERIAL_PRINT(pads[i].cc);
+    SERIAL_PRINT(" CH ");
+    SERIAL_PRINT(pads[i].channel);
+    SERIAL_PRINT(" Type ");
+    SERIAL_PRINT(to_string(pads[i].type));
+    SERIAL_PRINT(" Type_num ");
+    SERIAL_PRINTLN(arr[128 + i * 3 + 2]);
   }
 }

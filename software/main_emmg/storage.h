@@ -18,10 +18,10 @@
 #include "controllersettings.h"
 
 class Storage {
-    char signature[8] = {0x42, 'E', 'M', 'M', 'G', 'V', '0', '2'};
+    char signature[8] = {0x42, 'E', 'M', 'M', 'G', 'V', '0', '4'};
     const uint16_t offset_settings_size = 8;
     const uint16_t offset_settings_table = 64;
-    const uint16_t memory_size = 255;
+    const uint16_t memory_size = 1024;
     uint8_t settings_buffer[SETTINGS_SIZE]{0};
     //char buffer[8] = {0};
 
