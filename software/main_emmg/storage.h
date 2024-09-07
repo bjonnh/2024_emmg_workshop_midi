@@ -10,35 +10,50 @@
  *
  */
 
+#ifndef EMMG_2040_STORAGE_H
+#define EMMG_2040_STORAGE_H
 
-#include "display.h"
+#include <cstddef>
+#include <cstdint>
+#include "controllersettings.h"
 
+class Storage {
+    char signature[8] = {0x42, 'E', 'M', 'M', 'G', 'V', '0', '2'};
+    const uint16_t offset_settings_size = 8;
+    const uint16_t offset_settings_table = 64;
+    const uint16_t memory_size = 255;
+    uint8_t settings_buffer[SETTINGS_SIZE]{0};
+    //char buffer[8] = {0};
 
-Display::Display() : adisplay(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1) {};
+public:
+    Storage()= default;
+    /**
+     * Mandatory!
+     */
+    bool init();
 
-void Display::begin() {
-  delay(100);
-  SERIAL_PRINTLN("Booting display");
-  Wire1.setSDA(SCREEN_SDA);
-  Wire1.setSCL(SCREEN_SCL);
-  Wire1.setClock(1000000);
-  Wire1.begin();
+    /**
+     * Erases the EEPROM
+     */
+    void erase();
 
-  if (!adisplay.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    SERIAL_PRINTLN(F("SSD1306 allocation failed"));
-    for (;;); // Don't proceed, loop forever
-  }
-  delay(10);
-  adisplay.setRotation(2);
-  adisplay.clearDisplay();
-  adisplay.display();
-  delay(100);
-}
+    /**
+     * Checks if the EEPROM segment contains our signature
+     * @return true if yes
+     */
+    bool legit();
 
-void Display::test() {
-  adisplay.setTextSize(1);
-  adisplay.setTextColor(SSD1306_WHITE);
-  adisplay.setCursor(0, 0);
-  adisplay.println(F("Hello, world!"));
-  adisplay.display();
-}
+    /**
+     * Save the given settings
+     */
+    void save_settings(ControllerSettings& settings);
+
+    /**
+     * Load into the given routing_matrix
+     */
+    void load_settings(ControllerSettings& settings);
+};
+
+extern Storage storage;
+
+#endif //EMMG_2040_STORAGE_H

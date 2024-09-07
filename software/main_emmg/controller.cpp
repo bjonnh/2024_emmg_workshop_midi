@@ -1,7 +1,20 @@
+/*
+ * Copyright (c) 2024. Jonathan Bisson
+ * SPDX-License-Identifier: MIT
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
+
 #include <Arduino.h>
 #include "controller.h"
 #include <Fonts/FreeSans9pt7b.h>
 #include <Fonts/TomThumb.h>
+#include "config.h"
 
 ControllerMode* ControllerModeInstance = nullptr;
 
@@ -9,25 +22,23 @@ ControllerMode* ControllerModeInstance = nullptr;
 void SetupMenuState::setFromKnob(uint8_t value) {
   if (value < 20)
     selected_state = ControllerModeState::NORMAL;
-  else if (value < 60)
+  else if (value < 40)
     selected_state = ControllerModeState::CONTROLLER_SETUP;
-  else if (value < 100)
+  else if (value < 60)
     selected_state = ControllerModeState::PAD_SETUP;
+  else if (value < 80)
+    selected_state = ControllerModeState::LOAD;
+  else if (value < 100)
+    selected_state = ControllerModeState::SAVE;
   else
     selected_state = ControllerModeState::PANIC;
 }
 
-Controller::Controller(uint8_t cc, uint8_t channel)
-  : cc(cc), channel(channel){};
 
-Pad::Pad(uint8_t note, uint8_t channel)
-  : note(note), channel(channel){};
 
 ControllerMode::ControllerMode(Device& device)
   : device(device) {
   ControllerModeInstance = this;
-  for (uint8_t i = 0; i < 8; i++) controllers[i] = Controller(20 + i, 1);
-  for (uint8_t i = 0; i < 12; i++) pads[i] = Pad(50 + i, 1);
 
   device.setKnobCallback([](uint8_t id, uint8_t value) {
     ControllerModeInstance->onKnobChange(id, value);
@@ -40,6 +51,19 @@ ControllerMode::ControllerMode(Device& device)
   });
 }
 
+void ControllerMode::begin() {
+    if (!storage.init()) {
+    for (uint8_t i = 0; i < 8; i++) controller_settings.controllers[i] = Controller(20 + i, 1);
+    for (uint8_t i = 0; i < 12; i++) controller_settings.pads[i] = Pad(50 + i, 1);
+    SERIAL_PRINTLN("Generating default settings");
+    storage.save_settings(controller_settings);
+  } else {
+    SERIAL_PRINTLN("Loading settings");
+    storage.load_settings(controller_settings);
+  }
+}
+
+
 void ControllerMode::loop() {
   device.poll();
 }
@@ -47,7 +71,7 @@ void ControllerMode::loop() {
 void ControllerMode::onKnobChange(uint8_t id, uint8_t value) {
   switch (current_state) {
     case ControllerModeState::NORMAL:
-      device.sendControlChange(controllers[id].cc, value, controllers[id].channel);
+      device.sendControlChange(controller_settings.controllers[id].cc, value, controller_settings.controllers[id].channel);
       update();
       break;
     case ControllerModeState::SETUP_MENU:
@@ -60,8 +84,8 @@ void ControllerMode::onKnobChange(uint8_t id, uint8_t value) {
       if (id == 0) {
         controller_setup_state.controller = (value / 15);  // We use 15 to have 9 states so the last one is for exiting
         if (controller_setup_state.controller < 8) {
-          controller_setup_state.cc = controllers[controller_setup_state.controller].cc;
-          controller_setup_state.channel = controllers[controller_setup_state.controller].channel;
+          controller_setup_state.cc = controller_settings.controllers[controller_setup_state.controller].cc;
+          controller_setup_state.channel = controller_settings.controllers[controller_setup_state.controller].channel;
         }
         update();
       }
@@ -81,8 +105,8 @@ void ControllerMode::onKnobChange(uint8_t id, uint8_t value) {
       if (id == 0) {
         pad_setup_state.pad = (value / 10);  // We use 10 to have 13 states so the last one is for exiting
         if (pad_setup_state.pad < 12) {
-          pad_setup_state.note = pads[pad_setup_state.pad].note;
-          pad_setup_state.channel = pads[pad_setup_state.pad].channel;
+          pad_setup_state.note = controller_settings.pads[pad_setup_state.pad].note;
+          pad_setup_state.channel = controller_settings.pads[pad_setup_state.pad].channel;
         }
         update();
       }
@@ -103,9 +127,9 @@ void ControllerMode::onKnobChange(uint8_t id, uint8_t value) {
 
 void ControllerMode::onTouchPadChange(uint8_t id, uint8_t value) {
   if (value == 1) {
-    device.sendNoteOn(pads[id].note, 127, pads[id].channel);
+    device.sendNoteOn(controller_settings.pads[id].note, 127, controller_settings.pads[id].channel);
   } else {
-    device.sendNoteOff(pads[id].note, 0, pads[id].channel);
+    device.sendNoteOff(controller_settings.pads[id].note, 0, controller_settings.pads[id].channel);
   }
   update();
 }
@@ -120,12 +144,20 @@ void ControllerMode::onButtonChange(uint8_t id, uint8_t value) {
         current_state = setup_menu_state.selected_state;
         if (current_state == ControllerModeState::CONTROLLER_SETUP) {
           if (controller_setup_state.controller < 8) {
-            controller_setup_state.cc = controllers[controller_setup_state.controller].cc;
-            controller_setup_state.channel = controllers[controller_setup_state.controller].channel;
+            controller_setup_state.cc = controller_settings.controllers[controller_setup_state.controller].cc;
+            controller_setup_state.channel = controller_settings.controllers[controller_setup_state.controller].channel;
           }
         }
         if (current_state == ControllerModeState::PANIC) {
           device.midiPanic();
+          current_state = ControllerModeState::NORMAL;
+        }
+        if (current_state == ControllerModeState::LOAD) {
+          storage.load_settings(controller_settings);
+          current_state = ControllerModeState::NORMAL;
+        }
+        if (current_state == ControllerModeState::SAVE) {
+          storage.save_settings(controller_settings);
           current_state = ControllerModeState::NORMAL;
         }
         break;
@@ -133,16 +165,16 @@ void ControllerMode::onButtonChange(uint8_t id, uint8_t value) {
         if (controller_setup_state.controller == 8) {
           current_state = ControllerModeState::NORMAL;
         } else {
-          controllers[controller_setup_state.controller].cc = controller_setup_state.cc;
-          controllers[controller_setup_state.controller].channel = controller_setup_state.channel;
+          controller_settings.controllers[controller_setup_state.controller].cc = controller_setup_state.cc;
+          controller_settings.controllers[controller_setup_state.controller].channel = controller_setup_state.channel;
         }
         break;
       case ControllerModeState::PAD_SETUP:
         if (pad_setup_state.pad == 12) {
           current_state = ControllerModeState::NORMAL;
         } else {
-          pads[pad_setup_state.pad].note = pad_setup_state.note;
-          pads[pad_setup_state.pad].channel = pad_setup_state.channel;
+          controller_settings.pads[pad_setup_state.pad].note = pad_setup_state.note;
+          controller_settings.pads[pad_setup_state.pad].channel = pad_setup_state.channel;
         }
         break;
     }
@@ -195,6 +227,12 @@ void ControllerMode::display_setup_menu() {
     case ControllerModeState::PANIC:
       device.display.adisplay.print("PANIC!");
       break;
+    case ControllerModeState::LOAD:
+      device.display.adisplay.print("Load");
+      break;
+    case ControllerModeState::SAVE:
+      device.display.adisplay.print("Save");
+      break;
   }
   device.display.adisplay.display();
 }
@@ -211,13 +249,13 @@ void ControllerMode::display_controller_setup() {
     device.display.adisplay.setCursor(0, 20);
     device.display.adisplay.print("CC         -> ");
     device.display.adisplay.setCursor(40, 20);
-    device.display.adisplay.print(controllers[controller_setup_state.controller].cc);
+    device.display.adisplay.print(controller_settings.controllers[controller_setup_state.controller].cc);
     device.display.adisplay.setCursor(90, 20);
     device.display.adisplay.print(controller_setup_state.cc);
     device.display.adisplay.setCursor(0, 40);
     device.display.adisplay.print("CH         -> ");
     device.display.adisplay.setCursor(40, 40);
-    device.display.adisplay.print(controllers[controller_setup_state.controller].channel);
+    device.display.adisplay.print(controller_settings.controllers[controller_setup_state.controller].channel);
     device.display.adisplay.setCursor(90, 40);
     device.display.adisplay.print(controller_setup_state.channel);
   } else {
@@ -238,13 +276,13 @@ void ControllerMode::display_pad_setup() {
     device.display.adisplay.setCursor(0, 20);
     device.display.adisplay.print("Note       -> ");
     device.display.adisplay.setCursor(40, 20);
-    device.display.adisplay.print(pads[pad_setup_state.pad].note);
+    device.display.adisplay.print(controller_settings.pads[pad_setup_state.pad].note);
     device.display.adisplay.setCursor(90, 20);
     device.display.adisplay.print(pad_setup_state.note);
     device.display.adisplay.setCursor(0, 40);
     device.display.adisplay.print("CH         -> ");
     device.display.adisplay.setCursor(40, 40);
-    device.display.adisplay.print(pads[pad_setup_state.pad].channel);
+    device.display.adisplay.print(controller_settings.pads[pad_setup_state.pad].channel);
     device.display.adisplay.setCursor(90, 40);
     device.display.adisplay.print(pad_setup_state.channel);
   } else {

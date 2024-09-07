@@ -1,0 +1,7 @@
+#ifndef EMMG_CONFIG_H
+#define EMMG_CONFIG_H
+
+#define NUMBER_OF_KNOBS 8
+#define NUMBER_OF_PADS 12
+
+#endif // EMMG_CONFIG_H

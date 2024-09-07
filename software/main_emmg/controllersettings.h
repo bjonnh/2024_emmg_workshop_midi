@@ -10,35 +10,38 @@
  *
  */
 
+#ifndef EMMG_CONTROLLER_SETTINGS_H
+#define EMMG_CONTROLLER_SETTINGS_H
 
-#include "display.h"
+#include <Arduino.h>
+#include "config.h"
 
 
-Display::Display() : adisplay(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1) {};
+#define SETTINGS_SIZE 2*NUMBER_OF_KNOBS + 2*NUMBER_OF_PADS
 
-void Display::begin() {
-  delay(100);
-  SERIAL_PRINTLN("Booting display");
-  Wire1.setSDA(SCREEN_SDA);
-  Wire1.setSCL(SCREEN_SCL);
-  Wire1.setClock(1000000);
-  Wire1.begin();
+class Controller {
+  public:
+    Controller() {};
+    Controller(uint8_t cc, uint8_t channel);
+    uint8_t cc = 0;
+    uint8_t channel = 1;
+};
 
-  if (!adisplay.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    SERIAL_PRINTLN(F("SSD1306 allocation failed"));
-    for (;;); // Don't proceed, loop forever
-  }
-  delay(10);
-  adisplay.setRotation(2);
-  adisplay.clearDisplay();
-  adisplay.display();
-  delay(100);
-}
+class Pad {
+  public:
+    Pad() {};
+    Pad(uint8_t note, uint8_t channel);
+    uint8_t note = 0;
+    uint8_t channel = 1;
+};
 
-void Display::test() {
-  adisplay.setTextSize(1);
-  adisplay.setTextColor(SSD1306_WHITE);
-  adisplay.setCursor(0, 0);
-  adisplay.println(F("Hello, world!"));
-  adisplay.display();
-}
+class ControllerSettings {
+  public:
+    void saveToArray(uint8_t* arr);
+    void loadFromArray(const uint8_t* arr);
+
+    Controller controllers[NUMBER_OF_KNOBS];
+    Pad pads[NUMBER_OF_PADS];
+};
+
+#endif // EMMG_CONTROLLER_SETTINGS_H

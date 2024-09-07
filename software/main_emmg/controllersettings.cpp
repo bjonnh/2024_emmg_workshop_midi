@@ -10,35 +10,37 @@
  *
  */
 
+#include "controllersettings.h"
 
-#include "display.h"
+Controller::Controller(uint8_t cc, uint8_t channel)
+  : cc(cc), channel(channel){};
 
+Pad::Pad(uint8_t note, uint8_t channel)
+  : note(note), channel(channel){};
 
-Display::Display() : adisplay(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1) {};
-
-void Display::begin() {
-  delay(100);
-  SERIAL_PRINTLN("Booting display");
-  Wire1.setSDA(SCREEN_SDA);
-  Wire1.setSCL(SCREEN_SCL);
-  Wire1.setClock(1000000);
-  Wire1.begin();
-
-  if (!adisplay.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    SERIAL_PRINTLN(F("SSD1306 allocation failed"));
-    for (;;); // Don't proceed, loop forever
+void ControllerSettings::saveToArray(uint8_t* arr) {
+  // We store the knobs at 0
+  for (int i = 0; i < NUMBER_OF_KNOBS; i++) {
+    arr[i * 2] = controllers[i].cc;
+    arr[i * 2 + 1] = controllers[i].channel;
   }
-  delay(10);
-  adisplay.setRotation(2);
-  adisplay.clearDisplay();
-  adisplay.display();
-  delay(100);
+  // We store the pads at 128
+  for (int i = 0; i < NUMBER_OF_PADS; i++) {
+    arr[128 + i * 2] = pads[i].note;
+    arr[128 + i * 2 + 1] = pads[i].channel;
+  }
 }
 
-void Display::test() {
-  adisplay.setTextSize(1);
-  adisplay.setTextColor(SSD1306_WHITE);
-  adisplay.setCursor(0, 0);
-  adisplay.println(F("Hello, world!"));
-  adisplay.display();
+void ControllerSettings::loadFromArray(const uint8_t* arr) {
+  // Load knob settings
+  for (int i = 0; i < NUMBER_OF_KNOBS; i++) {
+    controllers[i].cc = arr[i * 2];
+    controllers[i].channel = arr[i * 2 + 1];
+  }
+
+  // Load pad settings
+  for (int i = 0; i < NUMBER_OF_PADS; i++) {
+    pads[i].note = arr[128 + i * 2];
+    pads[i].channel = arr[128 + i * 2 + 1];
+  }
 }
