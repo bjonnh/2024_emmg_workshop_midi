@@ -18,9 +18,11 @@
 Knobs knobs;
 MultiTouch touch;
 
-Device::Device(midi::MidiInterface<midi::SerialMIDI<Adafruit_USBD_MIDI>>& midi,
-               midi::MidiInterface<midi::PioMIDI>& midi_1)
-  : MIDI(midi), MIDI_1(midi_1), debounced_button(BUTTON_PIN, 50) {
+
+MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI_IF_1);  // Unfortunately the PIO version doesn't work
+
+Device::Device()
+  : debounced_button(BUTTON_PIN, 50) {
   for (int i = 0; i < 8; i++) {
     knobValues[i] = 0;
   }
@@ -28,21 +30,40 @@ Device::Device(midi::MidiInterface<midi::SerialMIDI<Adafruit_USBD_MIDI>>& midi,
     touchPadStates[i] = false;
   }
 
-  pinMode(BUTTON_PIN, INPUT);
   buttonState = false;
+ 
 }
 
 void Device::begin() {
   display.begin();
+  SERIAL_PRINTLN("Testing display");
   display.test();
   SERIAL_PRINTLN("Calibrate touchpads");
   touch.calibrateAll();
+  SERIAL_PRINTLN("Starting the knobs");
+  knobs.begin();
   SERIAL_PRINTLN("Setup MIDI");
 
+  MIDI_IF_1.begin(MIDI_CHANNEL_OMNI);
+
+  //usb_midi.setStringDescriptor("EMMG MIDI 2024");
+
+  
+
+   //while (!TinyUSBDevice.mounted()) {
+   // delay(1);
+ // }
+
+  debounced_button.init();
   SERIAL_PRINTLN("Device ready");
 }
 
 void Device::poll() {
+#ifdef TINYUSB_NEED_POLLING_TASK
+  if (TinyUSBDevice.mounted()) {
+    TinyUSBDevice.task();
+  }
+#endif
   knobs.tick();
   touch.tick();
   debounced_button.tick();
@@ -122,23 +143,31 @@ void Device::triggerButtonCallback(uint8_t index, uint8_t value) {
 }
 
 void Device::sendControlChange(uint8_t index, uint8_t value, uint8_t channel) {
-  MIDI.sendControlChange(index, value, channel);
-  MIDI_1.sendControlChange(index, value, channel);
+  if (TinyUSBDevice.mounted()) {
+    MIDI->sendControlChange(index, value, channel);
+  }
+  MIDI_IF_1.sendControlChange(index, value, channel);
 }
 
 void Device::sendNoteOn(uint8_t index, uint8_t value, uint8_t channel) {
-  MIDI.sendNoteOn(index, value, channel);
-  MIDI_1.sendNoteOn(index, value, channel);
+  if (TinyUSBDevice.mounted()) {
+    MIDI->sendNoteOn(index, value, channel);
+  }
+  MIDI_IF_1.sendNoteOn(index, value, channel);
 }
 
 void Device::sendNoteOff(uint8_t index, uint8_t value, uint8_t channel) {
-  MIDI.sendNoteOff(index, value, channel);
-  MIDI_1.sendNoteOn(index, value, channel);
+  if (TinyUSBDevice.mounted()) {
+    MIDI->sendNoteOff(index, value, channel);
+  }
+  MIDI_IF_1.sendNoteOn(index, value, channel);
 }
 
 void Device::midiPanic() {
-  for (int i=0; i<16;i++) {
-    MIDI.sendControlChange(123, 0, i);
-    MIDI_1.sendControlChange(123, 0, i);
+  for (int i = 0; i < 16; i++) {
+    if (TinyUSBDevice.mounted()) {
+      MIDI->sendControlChange(123, 0, i);
+    }
+    MIDI_IF_1.sendControlChange(123, 0, i);
   }
 }

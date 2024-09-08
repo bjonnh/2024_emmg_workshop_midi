@@ -18,42 +18,42 @@
 #include "controllersettings.h"
 
 class Storage {
-    char signature[8] = {0x42, 'E', 'M', 'M', 'G', 'V', '0', '4'};
-    const uint16_t offset_settings_size = 8;
-    const uint16_t offset_settings_table = 64;
-    const uint16_t memory_size = 1024;
-    uint8_t settings_buffer[SETTINGS_SIZE]{0};
-    //char buffer[8] = {0};
+  char signature[8] = { 0x42, 'E', 'M', 'M', 'G', 'V', '0', '4' };
+  uint8_t settings_buffer[SETTINGS_SIZE]{ 0 };
+  const char* STORAGE_FILE = "/storage.bin";
+  const size_t SIGNATURE_SIZE = 8;  // Adjust this to match your signature size
+  const size_t TOTAL_SIZE = SIGNATURE_SIZE + SETTINGS_SIZE;
+  //char buffer[8] = {0};
 
 public:
-    Storage()= default;
-    /**
+  Storage() = default;
+  /**
      * Mandatory!
      */
-    bool init();
+  bool init();
 
-    /**
+  /**
      * Erases the EEPROM
      */
-    void erase();
+  void erase();
 
-    /**
+  /**
      * Checks if the EEPROM segment contains our signature
      * @return true if yes
      */
-    bool legit();
+  bool legit();
 
-    /**
+  /**
      * Save the given settings
      */
-    void save_settings(ControllerSettings& settings);
+  void save_settings(ControllerSettings& settings);
 
-    /**
+  /**
      * Load into the given routing_matrix
      */
-    void load_settings(ControllerSettings& settings);
+  void load_settings(ControllerSettings& settings);
 };
 
 extern Storage storage;
 
-#endif //EMMG_2040_STORAGE_H
+#endif  //EMMG_2040_STORAGE_H

@@ -12,30 +12,29 @@
 
 
 #include "debouncer.h"
+#include "debug.h"
+
 
 Debouncer::Debouncer(int pin, unsigned long debounceDelay)
-  : pin(pin), debounceDelay(debounceDelay), buttonState(LOW), lastButtonState(LOW), lastDebounceTime(0), buttonPressed(false) {
+  : pin(pin), debounceDelay(debounceDelay), lastButtonState(LOW), lastDebounceTime(0), buttonPressed(false) {
+}
 
+void Debouncer::init() {
+  gpio_init(pin);
+  gpio_set_dir(pin, GPIO_IN);
+  gpio_set_pulls(pin, true, false);
 }
 
 void Debouncer::tick() {
-  pinMode(pin, INPUT_PULLUP);
-  int reading = !digitalRead(pin);
-
+  bool reading = !gpio_get(pin);
 
   if (reading != lastButtonState) {
     lastDebounceTime = millis();
   }
 
   if ((millis() - lastDebounceTime) > debounceDelay) {
-    if (reading != buttonState) {
-      buttonState = reading;
-
-      if (buttonState == HIGH) {
-        buttonPressed = true;
-      } else {
-        buttonPressed = false;
-      }
+    if (reading != buttonPressed) {
+      buttonPressed = reading;
     }
   }
 

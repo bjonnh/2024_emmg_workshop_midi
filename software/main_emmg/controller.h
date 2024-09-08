@@ -56,12 +56,14 @@ public:
   void onKnobChange(uint8_t id, uint8_t value);
   void onTouchPadChange(uint8_t id, uint8_t value);
   void onButtonChange(uint8_t id, uint8_t value);
+    void update();
 private:
-  void update();
   void display_normal_mode();
   void display_setup_menu();
   void display_controller_setup();
   void display_pad_setup();
+  volatile bool updated = false; // can only be written to by core0
+  volatile bool clear_updated = false; // can only be written to by core1
   Device& device;
   SetupMenuState setup_menu_state;
   ControllerSettings controller_settings;
@@ -69,6 +71,8 @@ private:
   ControllerModeState current_state = ControllerModeState::NORMAL;
   ControllerSetupState controller_setup_state;
   PadSetupState pad_setup_state;
+  uint8_t last_forced_update = 0;
+  bool ready = false;
 };
 
 

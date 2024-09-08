@@ -15,6 +15,7 @@
 #define TOUCH_H
 
 #include <Arduino.h>
+#include "config.h"
 
 class Touch {
 public:
@@ -26,22 +27,26 @@ private:
     int touchPin;
     uint16_t touchThreshold;
     uint16_t readCapacitance();
-    uint8_t numSamples = 10;
+    uint8_t numSamples = 5; // If you modify that you will likely have to modify offsetThreshold as well; 
+    uint16_t offsetThreshold = 10 * numSamples;
 };
 
 class MultiTouch {
 public:
     MultiTouch();
     void calibrateAll();
-    bool isTouched(int index);
+    bool isTouched(uint8_t index);
     int getFirstTouch();
     bool *getTouches();
     void tick();
 private:
     Touch **sensors;
-    int sensorCount = 12;
-    static constexpr int sensorPins[12] = {14, 11, 8, 16, 15, 12, 9, 6, 13, 10, 7, 17};
+    int sensorCount = NUMBER_OF_PADS;
+    unsigned long debounceDelay = 5;
+    static constexpr int sensorPins[NUMBER_OF_PADS] = PADS_PINS;
     bool *touches;
+    bool *lastTouchesState;
+    unsigned long *lastDebounceTimes;
 };
 
 #endif

@@ -16,10 +16,16 @@
 #include "debug.h"
 #include "storage.h"
 
-#include <EEPROM.h>
+//#include <EEPROM.h>
+#include <LittleFS.h>
 
 /* Returns true if it was already initialized */
 bool Storage::init() {
+
+  if (!LittleFS.begin()) {
+    SERIAL_PRINTLN("LittleFS Mount Failed");
+    return false;
+  }
 
   if (!legit()) {
     erase();
@@ -29,16 +35,19 @@ bool Storage::init() {
 }
 
 bool Storage::legit() {
-  // Check signature
-  for (int i = 0; i < sizeof(signature); i++)
-    if (EEPROM.read(i) != signature[i]) {
-      SERIAL_PRINTLN("Signature not matching!");
-      return false;
-    }
 
-  // Check Matrix Size
-  if (EEPROM.read(offset_settings_size) != SETTINGS_SIZE) {
-    SERIAL_PRINTLN("Settings size not matching!");
+  File file = LittleFS.open(STORAGE_FILE, "r");
+  if (!file || file.size() != TOTAL_SIZE) {
+    SERIAL_PRINTLN("Storage file not found or incorrect size!");
+    return false;
+  }
+
+  char stored_signature[SIGNATURE_SIZE];
+  file.read((uint8_t*)stored_signature, SIGNATURE_SIZE);
+  file.close();
+
+  if (memcmp(stored_signature, signature, SIGNATURE_SIZE) != 0) {
+    SERIAL_PRINTLN("Signature not matching!");
     return false;
   }
 
@@ -46,29 +55,39 @@ bool Storage::legit() {
 }
 
 void Storage::erase() {
-  for (int i = 0; i < sizeof(signature); i++)
-    EEPROM.write(i, signature[i]);
 
-  for (int i = sizeof(signature); i < memory_size; i++)
-    EEPROM.write(i, 0);
-  EEPROM.write(offset_settings_size, SETTINGS_SIZE);  // Careful if you make the settings larger than 255
+  File file = LittleFS.open(STORAGE_FILE, "w");
+  if (file) {
+    file.write((uint8_t*)signature, SIGNATURE_SIZE);
 
-  EEPROM.commit();
+    uint8_t empty_settings[SETTINGS_SIZE] = { 0 };
+    file.write(empty_settings, SETTINGS_SIZE);
+
+    file.close();
+  }
 }
 
 void Storage::save_settings(ControllerSettings& settings) {
   settings.saveToArray(settings_buffer);
 
-  for (size_t i = 0; i < SETTINGS_SIZE; i++)
-    EEPROM.write(offset_settings_table + i, settings_buffer[i]);
-
-  EEPROM.commit();
+  File file = LittleFS.open(STORAGE_FILE, "r+");
+  if (file) {
+    file.seek(SIGNATURE_SIZE, SeekSet);
+    file.write(settings_buffer, SETTINGS_SIZE);
+    file.close();
+  }
 }
 
 void Storage::load_settings(ControllerSettings& settings) {
-  for (int i = 0; i < SETTINGS_SIZE; i++)
-    settings_buffer[i] = EEPROM.read(offset_settings_table + i);
+  File file = LittleFS.open(STORAGE_FILE, "r");
+  if (file) {
+    file.seek(SIGNATURE_SIZE, SeekSet);
+    file.read(settings_buffer, SETTINGS_SIZE);
+    file.close();
+  }
+
   settings.loadFromArray(settings_buffer);
 }
+
 
 Storage storage;

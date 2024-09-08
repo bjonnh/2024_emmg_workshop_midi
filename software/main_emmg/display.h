@@ -31,7 +31,7 @@ class Display {
     void begin();
     void test();
 
-    Adafruit_SSD1306 adisplay;
+    Adafruit_SSD1306* adisplay;
 };
 
 #endif // DISPLAY_H

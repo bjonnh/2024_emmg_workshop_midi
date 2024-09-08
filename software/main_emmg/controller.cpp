@@ -39,7 +39,21 @@ void SetupMenuState::setFromKnob(uint8_t value) {
 ControllerMode::ControllerMode(Device& device)
   : device(device) {
   ControllerModeInstance = this;
+}
 
+void ControllerMode::begin() {
+  if (!storage.init()) {
+    SERIAL_PRINTLN("Storage not initialized");
+   for (uint8_t i = 0; i < 8; i++) controller_settings.controllers[i] = Controller(20 + i, 1);
+    for (uint8_t i = 0; i < 12; i++) controller_settings.pads[i] = Pad(50 + i, 1, 0, PadType::NOTE);
+    SERIAL_PRINTLN("Generating default settings");
+    storage.save_settings(controller_settings);
+  } else {
+    SERIAL_PRINTLN("Loading settings");
+    storage.load_settings(controller_settings);
+  }
+  
+  SERIAL_PRINTLN("Arming the callbacks");
   device.setKnobCallback([](uint8_t id, uint8_t value) {
     ControllerModeInstance->onKnobChange(id, value);
   });
@@ -49,35 +63,27 @@ ControllerMode::ControllerMode(Device& device)
   device.setButtonCallback([](uint8_t id, uint8_t value) {
     ControllerModeInstance->onButtonChange(id, value);
   });
+  
+  ready = true;
 }
-
-void ControllerMode::begin() {
-  if (!storage.init()) {
-    for (uint8_t i = 0; i < 8; i++) controller_settings.controllers[i] = Controller(20 + i, 1);
-    for (uint8_t i = 0; i < 12; i++) controller_settings.pads[i] = Pad(50 + i, 1, 0, PadType::NOTE);
-    SERIAL_PRINTLN("Generating default settings");
-    storage.save_settings(controller_settings);
-  } else {
-    SERIAL_PRINTLN("Loading settings");
-    storage.load_settings(controller_settings);
-  }
-}
-
 
 void ControllerMode::loop() {
   device.poll();
+  //if (clear_updated) updated = false;
+  //if (updated) {
+  //  updated = false;
+  //  update();
+  //}
 }
 
 void ControllerMode::onKnobChange(uint8_t id, uint8_t value) {
   switch (current_state) {
     case ControllerModeState::NORMAL:
       device.sendControlChange(controller_settings.controllers[id].cc, value, controller_settings.controllers[id].channel);
-      update();
       break;
     case ControllerModeState::SETUP_MENU:
       if (id == 0) {
         setup_menu_state.setFromKnob(value);
-        update();
       }
       break;
     case ControllerModeState::CONTROLLER_SETUP:
@@ -87,18 +93,14 @@ void ControllerMode::onKnobChange(uint8_t id, uint8_t value) {
           controller_setup_state.settings.cc = controller_settings.controllers[controller_setup_state.controller].cc;
           controller_setup_state.settings.channel = controller_settings.controllers[controller_setup_state.controller].channel;
         }
-        update();
       }
 
       if (id == 1) {
         controller_setup_state.settings.cc = value;
-
-        update();
       }
 
       if (id == 2) {
         controller_setup_state.settings.channel = (value / 8) + 1;
-        update();
       }
       break;
     case ControllerModeState::PAD_SETUP:
@@ -109,26 +111,22 @@ void ControllerMode::onKnobChange(uint8_t id, uint8_t value) {
           pad_setup_state.settings.channel = controller_settings.pads[pad_setup_state.pad].channel;
           pad_setup_state.settings.type = controller_settings.pads[pad_setup_state.pad].type;
         }
-        update();
       }
 
       if (id == 1) {
         pad_setup_state.settings.cc = value;
-
-        update();
       }
 
       if (id == 2) {
         pad_setup_state.settings.channel = (value / 8) + 1;
-        update();
       }
 
       if (id == 3) {
         pad_setup_state.settings.type = static_cast<PadType>(value / 43);
-        update();
       }
       break;
   }
+  updated = true;
 }
 
 void ControllerMode::onTouchPadChange(uint8_t id, uint8_t value) {
@@ -145,13 +143,19 @@ void ControllerMode::onTouchPadChange(uint8_t id, uint8_t value) {
       device.sendControlChange(pad.cc, (value == 1) ? 127 : 0, pad.channel);
       break;
     case PadType::CC_LATCH:
-      if (value == 1) {
-        pad.current = 127 - pad.current;
-        device.sendControlChange(pad.cc, pad.current, pad.channel);
-      } 
+      bool changed = false;
+      if (value == 1 && pad.current == 0) {
+        pad.current = 127;
+        changed = true;
+      } else if (value == 1 && pad.current == 127) {
+        pad.current = 0;
+        changed = true;
+      }
+      if (changed) device.sendControlChange(pad.cc, pad.current, pad.channel);
+
       break;
   }
-  update();
+  updated = true;
 }
 
 void ControllerMode::onButtonChange(uint8_t id, uint8_t value) {
@@ -199,137 +203,143 @@ void ControllerMode::onButtonChange(uint8_t id, uint8_t value) {
         }
         break;
     }
-    update();
+    updated = true;
   }
 }
 
 void ControllerMode::display_normal_mode() {
-  device.display.adisplay.clearDisplay();
-  device.display.adisplay.setFont(&FreeSans9pt7b);
-  device.display.adisplay.setTextSize(1);
-  device.display.adisplay.setTextColor(SSD1306_WHITE);
+  device.display.adisplay->clearDisplay();
+  device.display.adisplay->setFont(&FreeSans9pt7b);
+  device.display.adisplay->setTextSize(1);
+  device.display.adisplay->setTextColor(SSD1306_WHITE);
   for (uint8_t i = 0; i < 8; i++) {
     uint8_t value = device.getKnobValue(i);
 
-    device.display.adisplay.setCursor((i % 4) * 32, 20 + 24 * (i / 4));
-    if (value < 100) device.display.adisplay.print(" ");
-    if (value < 10) device.display.adisplay.print(" ");
-    device.display.adisplay.print(value);
+    device.display.adisplay->setCursor((i % 4) * 32, 20 + 24 * (i / 4));
+    if (value < 100) device.display.adisplay->print(" ");
+    if (value < 10) device.display.adisplay->print(" ");
+    device.display.adisplay->print(value);
   }
   for (uint8_t i = 0; i < 12; i++) {
     bool touched = device.getTouchPadValue(i);
     Pad& pad = controller_settings.pads[i];
-    if (touched || (pad.type == PadType::CC_LATCH && pad.current == 127)) {
-      device.display.adisplay.drawRect(i * 10 + 4, 52, 8, 12, SSD1306_WHITE);
+    if ((pad.type != PadType::CC_LATCH && touched) || (pad.type == PadType::CC_LATCH && pad.current == 127)) {
+      device.display.adisplay->drawRect(i * 10 + 4, 52, 8, 12, SSD1306_WHITE);
     } else {
-       
-      device.display.adisplay.fillRect(i * 10 + 4, 52, 8, 12, SSD1306_WHITE);
+
+      device.display.adisplay->fillRect(i * 10 + 4, 52, 8, 12, SSD1306_WHITE);
     }
   }
-  device.display.adisplay.display();
+  device.display.adisplay->display();
 }
 
 void ControllerMode::display_setup_menu() {
-  device.display.adisplay.clearDisplay();
-  device.display.adisplay.setFont(&FreeSans9pt7b);
-  device.display.adisplay.setTextSize(1);
-  device.display.adisplay.setTextColor(SSD1306_WHITE);
-  device.display.adisplay.setCursor(0, 20);
-  device.display.adisplay.print("Setup");
-  device.display.adisplay.setCursor(0, 61);
+  device.display.adisplay->clearDisplay();
+  device.display.adisplay->setFont(&FreeSans9pt7b);
+  device.display.adisplay->setTextSize(1);
+  device.display.adisplay->setTextColor(SSD1306_WHITE);
+  device.display.adisplay->setCursor(0, 20);
+  device.display.adisplay->print("Setup");
+  device.display.adisplay->setCursor(0, 61);
   switch (setup_menu_state.selected_state) {
     case ControllerModeState::NORMAL:
-      device.display.adisplay.print("< Back");
+      device.display.adisplay->print("< Back");
       break;
     case ControllerModeState::CONTROLLER_SETUP:
-      device.display.adisplay.print("Controller");
+      device.display.adisplay->print("Controller");
       break;
     case ControllerModeState::PAD_SETUP:
-      device.display.adisplay.print("Pad");
+      device.display.adisplay->print("Pad");
       break;
     case ControllerModeState::PANIC:
-      device.display.adisplay.print("PANIC!");
+      device.display.adisplay->print("PANIC!");
       break;
     case ControllerModeState::LOAD:
-      device.display.adisplay.print("Load");
+      device.display.adisplay->print("Load");
       break;
     case ControllerModeState::SAVE:
-      device.display.adisplay.print("Save");
+      device.display.adisplay->print("Save");
       break;
   }
-  device.display.adisplay.display();
+  device.display.adisplay->display();
 }
 
 void ControllerMode::display_controller_setup() {
-  device.display.adisplay.clearDisplay();
-  device.display.adisplay.setFont(&FreeSans9pt7b);
-  device.display.adisplay.setTextSize(1);
-  device.display.adisplay.setTextColor(SSD1306_WHITE);
-  device.display.adisplay.setCursor(0, 61);
+  device.display.adisplay->clearDisplay();
+  device.display.adisplay->setFont(&FreeSans9pt7b);
+  device.display.adisplay->setTextSize(1);
+  device.display.adisplay->setTextColor(SSD1306_WHITE);
+  device.display.adisplay->setCursor(0, 61);
   if (controller_setup_state.controller < 8) {
-    device.display.adisplay.print("Controller ");
-    device.display.adisplay.print(controller_setup_state.controller + 1);
-    device.display.adisplay.setCursor(0, 20);
-    device.display.adisplay.print("CC         -> ");
-    device.display.adisplay.setCursor(40, 20);
-    device.display.adisplay.print(controller_settings.controllers[controller_setup_state.controller].cc);
-    device.display.adisplay.setCursor(90, 20);
-    device.display.adisplay.print(controller_setup_state.settings.cc);
-    device.display.adisplay.setCursor(0, 40);
-    device.display.adisplay.print("CH         -> ");
-    device.display.adisplay.setCursor(40, 40);
-    device.display.adisplay.print(controller_settings.controllers[controller_setup_state.controller].channel);
-    device.display.adisplay.setCursor(90, 40);
-    device.display.adisplay.print(controller_setup_state.settings.channel);
+    device.display.adisplay->print("Controller ");
+    device.display.adisplay->print(controller_setup_state.controller + 1);
+    device.display.adisplay->setCursor(0, 20);
+    device.display.adisplay->print("CC         -> ");
+    device.display.adisplay->setCursor(40, 20);
+    device.display.adisplay->print(controller_settings.controllers[controller_setup_state.controller].cc);
+    device.display.adisplay->setCursor(90, 20);
+    device.display.adisplay->print(controller_setup_state.settings.cc);
+    device.display.adisplay->setCursor(0, 40);
+    device.display.adisplay->print("CH         -> ");
+    device.display.adisplay->setCursor(40, 40);
+    device.display.adisplay->print(controller_settings.controllers[controller_setup_state.controller].channel);
+    device.display.adisplay->setCursor(90, 40);
+    device.display.adisplay->print(controller_setup_state.settings.channel);
   } else {
-    device.display.adisplay.print("< Back");
+    device.display.adisplay->print("< Back");
   }
-  device.display.adisplay.display();
+  device.display.adisplay->display();
 }
 
 void ControllerMode::display_pad_setup() {
-  device.display.adisplay.clearDisplay();
-  device.display.adisplay.setFont(&FreeSans9pt7b);
-  device.display.adisplay.setTextSize(1);
-  device.display.adisplay.setTextColor(SSD1306_WHITE);
-  device.display.adisplay.setCursor(0, 61);
+  device.display.adisplay->clearDisplay();
+  device.display.adisplay->setFont(&FreeSans9pt7b);
+  device.display.adisplay->setTextSize(1);
+  device.display.adisplay->setTextColor(SSD1306_WHITE);
+  device.display.adisplay->setCursor(0, 61);
   if (pad_setup_state.pad < 12) {
-    device.display.adisplay.print("Pad ");
-    device.display.adisplay.print(pad_setup_state.pad + 1);
-    device.display.adisplay.setCursor(70, 14);
-    device.display.adisplay.print("->");
+    device.display.adisplay->print("Pad ");
+    device.display.adisplay->print(pad_setup_state.pad + 1);
+    device.display.adisplay->setCursor(70, 14);
+    device.display.adisplay->print("->");
 
-    device.display.adisplay.setCursor(0, 14);
-    device.display.adisplay.print(to_string(controller_settings.pads[pad_setup_state.pad].type));
+    device.display.adisplay->setCursor(0, 14);
+    device.display.adisplay->print(to_string(controller_settings.pads[pad_setup_state.pad].type));
 
-    device.display.adisplay.setCursor(90, 14);
-    device.display.adisplay.print(to_string(pad_setup_state.settings.type));
+    device.display.adisplay->setCursor(90, 14);
+    device.display.adisplay->print(to_string(pad_setup_state.settings.type));
 
 
 
-    device.display.adisplay.setCursor(70, 30);
-    device.display.adisplay.print("->");
+    device.display.adisplay->setCursor(70, 30);
+    device.display.adisplay->print("->");
 
-    device.display.adisplay.setCursor(40, 30);
-    device.display.adisplay.print(controller_settings.pads[pad_setup_state.pad].cc);
-    device.display.adisplay.setCursor(90, 30);
-    device.display.adisplay.print(pad_setup_state.settings.cc);
-    device.display.adisplay.setCursor(0, 46);
-    device.display.adisplay.print("CH");
-    device.display.adisplay.setCursor(70, 46);
-    device.display.adisplay.print("->");
+    device.display.adisplay->setCursor(40, 30);
+    device.display.adisplay->print(controller_settings.pads[pad_setup_state.pad].cc);
+    device.display.adisplay->setCursor(90, 30);
+    device.display.adisplay->print(pad_setup_state.settings.cc);
+    device.display.adisplay->setCursor(0, 46);
+    device.display.adisplay->print("CH");
+    device.display.adisplay->setCursor(70, 46);
+    device.display.adisplay->print("->");
 
-    device.display.adisplay.setCursor(40, 46);
-    device.display.adisplay.print(controller_settings.pads[pad_setup_state.pad].channel);
-    device.display.adisplay.setCursor(90, 46);
-    device.display.adisplay.print(pad_setup_state.settings.channel);
+    device.display.adisplay->setCursor(40, 46);
+    device.display.adisplay->print(controller_settings.pads[pad_setup_state.pad].channel);
+    device.display.adisplay->setCursor(90, 46);
+    device.display.adisplay->print(pad_setup_state.settings.channel);
   } else {
-    device.display.adisplay.print("< Back");
+    device.display.adisplay->print("< Back");
   }
-  device.display.adisplay.display();
+  device.display.adisplay->display();
 }
 
 void ControllerMode::update() {
+  if (!ready) return;
+  //if (!updated || last_forced_update < 10) {
+  //  last_forced_update++;
+  //  return;
+  //}
+  //last_forced_update = 0;
   switch (current_state) {
     case ControllerModeState::NORMAL:
       display_normal_mode();
@@ -344,4 +354,5 @@ void ControllerMode::update() {
       display_pad_setup();
       break;
   }
+  //clear_updated = true;
 }

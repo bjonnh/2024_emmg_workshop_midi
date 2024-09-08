@@ -16,63 +16,75 @@
 // LowPassFilter implementation
 // alpha is a smoothing factor, 0 < alpha < 1, the lowest the more it filters but the slower it responds
 // delta is the minimum difference between values to consider an immediate change skipping the filter
-LowPassFilter::LowPassFilter(float alpha, int delta) 
-    : alpha(alpha), delta(delta), filtered_value(-1) {}
+LowPassFilter::LowPassFilter(float alpha, int delta)
+  : alpha(alpha), delta(delta), filtered_value(-1) {}
 
 uint8_t LowPassFilter::apply(int value) {
-    if (filtered_value == -1) {
-        filtered_value = value;
-    } else {
-        if (abs(value - filtered_value) > delta) {
-            filtered_value = value;
-        } else if (abs(value - filtered_value) >= 1) {  // A subtle rounding error happened because of floats, maybe we don't want floats all?
-            filtered_value = alpha * value + (1 - alpha) * filtered_value; 
-        }
+  if (filtered_value == -1) {
+    filtered_value = value;
+  } else {
+    if (abs(value - filtered_value) > delta) {
+      filtered_value = value;
+    } else if (abs(value - filtered_value) >= 1) {  // A subtle rounding error happened because of floats, maybe we don't want floats all?
+      filtered_value = alpha * value + (1 - alpha) * filtered_value;
     }
-    return filtered_value;
+  }
+  return filtered_value;
 }
 
 // Knobs implementation
-Knobs::Knobs()    : num_address_pins(3), num_knobs(8) {
-    for (int i = 0; i < num_knobs; i++) {
-        filters[i] = new LowPassFilter();
-    }
-    analogReadResolution(12);
-    for (int i = 0; i < num_address_pins; i++) {
-        pinMode(address_pins[i], OUTPUT);
-    }
+Knobs::Knobs()
+  : num_address_pins(KNOBS_ADDRESS_SIZE), num_knobs(NUMBER_OF_KNOBS) {
+}
 
+void Knobs::begin() {
+  adc_init();
+  adc_gpio_init(knobs_analog_pin);
+  for (int i = 0; i < num_knobs; i++) {
+    filters[i] = new LowPassFilter();
+  }
+  analogReadResolution(12);
+  for (int i = 0; i < num_address_pins; i++) {
+    gpio_init(address_pins[i]);
+    gpio_set_dir(address_pins[i], GPIO_OUT);
+  }
 }
 
 void Knobs::tick() {
-    for (int i = 0; i < num_knobs; i++) {
-        read(i);
-    }
+  adc_select_input(knobs_analog_pin_index);
+  for (int i = 0; i < num_knobs; i++) {
+    direct_read(i);
+  }
 }
 
 int Knobs::getSize() {
   return num_knobs;
 }
 
-int *Knobs::getValues() {
+int* Knobs::getValues() {
   return values;
 }
 
 int Knobs::read(int knob) {
-    if (knob >= num_knobs) {
-        SERIAL_PRINTLN("Knob index out of range");
-        return -1;
-    }
-    for (int j = 0; j < num_address_pins; j++) {
-        digitalWrite(address_pins[j], addresses[knob][j]);
-        
-    }
-    int value = analogRead(knobs_analog_pin);
-    
-    int raw_value = 130 - map(value, 100, 3900, 0, 130);  // 12-bit ADC max value is 4095
-    if (raw_value<0) raw_value=0;
-    uint8_t filtered_value = filters[knob]->apply(raw_value);
-    if (filtered_value > 127) filtered_value = 127;
-    values[knob] = filtered_value;
-    return values[knob];
+  adc_select_input(knobs_analog_pin_index);
+  return direct_read(knob);
+}
+
+inline int Knobs::direct_read(int knob) {
+  if (knob >= num_knobs) {
+    SERIAL_PRINTLN("Knob index out of range");
+    return -1;
+  }
+  for (int j = 0; j < num_address_pins; j++) {
+    gpio_put(address_pins[j], addresses[knob][j]);
+  }
+  delayMicroseconds(5);
+  int value = adc_read();
+
+  int raw_value = 130 - map(value, 100, 3900, 0, 130);  // 12-bit ADC max value is 4095
+  if (raw_value < 0) raw_value = 0;
+  uint8_t filtered_value = filters[knob]->apply(raw_value);
+  if (filtered_value > 127) filtered_value = 127;
+  values[knob] = filtered_value;
+  return values[knob];
 }
