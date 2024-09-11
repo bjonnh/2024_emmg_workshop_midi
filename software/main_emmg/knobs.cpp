@@ -50,7 +50,7 @@ void Knobs::begin() {
   }
 }
 
-void Knobs::tick() {
+void __not_in_flash_func(Knobs::tick)() {
   adc_select_input(knobs_analog_pin_index);
   for (int i = 0; i < num_knobs; i++) {
     direct_read(i);

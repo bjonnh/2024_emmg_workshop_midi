@@ -17,7 +17,7 @@ Touch::Touch(int pin, unsigned long threshold)
   
 }
 
-bool Touch::isTouched() {
+bool __not_in_flash_func(Touch::isTouched)() {
   uint16_t capacitance = readCapacitance();
   return capacitance > touchThreshold;
 }
@@ -32,7 +32,7 @@ void Touch::calibrate() {
   touchThreshold = baseline * 1.2 + offsetThreshold;  // Add some margin
 }
 
-uint16_t Touch::readCapacitance() {
+uint16_t __not_in_flash_func(Touch::readCapacitance)() {
   uint16_t ticks = 0;
   for (uint8_t sample = 0; sample < numSamples; sample++) {
     gpio_set_dir(touchPin, GPIO_OUT);
@@ -42,8 +42,8 @@ uint16_t Touch::readCapacitance() {
     gpio_set_dir(touchPin, GPIO_IN);
 
     while (gpio_get(touchPin)) {
-      if (ticks >= 10000) {
-        return 10000;
+      if (ticks >= 5000) {
+        return 5000;
       }
       ticks++;
     }
@@ -70,7 +70,7 @@ void MultiTouch::calibrateAll() {
   }
 }
 
-bool MultiTouch::isTouched(uint8_t index) {
+bool __not_in_flash_func(MultiTouch::isTouched)(uint8_t index) {
   if (index < 0 || index >= sensorCount) {
     return false;
   }
@@ -87,7 +87,7 @@ int MultiTouch::getFirstTouch() {
   return -1;
 }
 
-void MultiTouch::tick() {
+void __not_in_flash_func(MultiTouch::tick)() {
   for (int i = 0; i < sensorCount; i++) {
     bool newTouch = sensors[i]->isTouched();
 

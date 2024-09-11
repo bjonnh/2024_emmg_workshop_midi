@@ -42,7 +42,7 @@ public:
 private:
     Touch **sensors;
     int sensorCount = NUMBER_OF_PADS;
-    unsigned long debounceDelay = 5;
+    unsigned long debounceDelay = 1;
     static constexpr int sensorPins[NUMBER_OF_PADS] = PADS_PINS;
     bool *touches;
     bool *lastTouchesState;

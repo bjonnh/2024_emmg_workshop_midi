@@ -25,7 +25,7 @@ void Debouncer::init() {
   gpio_set_pulls(pin, true, false);
 }
 
-void Debouncer::tick() {
+void __not_in_flash_func(Debouncer::tick)() {
   bool reading = !gpio_get(pin);
 
   if (reading != lastButtonState) {

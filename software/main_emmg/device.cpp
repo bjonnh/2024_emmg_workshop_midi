@@ -31,7 +31,6 @@ Device::Device()
   }
 
   buttonState = false;
- 
 }
 
 void Device::begin() {
@@ -48,22 +47,24 @@ void Device::begin() {
 
   //usb_midi.setStringDescriptor("EMMG MIDI 2024");
 
-  
 
-   //while (!TinyUSBDevice.mounted()) {
-   // delay(1);
- // }
+
+  //while (!TinyUSBDevice.mounted()) {
+  // delay(1);
+  // }
 
   debounced_button.init();
   SERIAL_PRINTLN("Device ready");
 }
 
-void Device::poll() {
+void __not_in_flash_func(Device::poll)() {
 #ifdef TINYUSB_NEED_POLLING_TASK
   if (TinyUSBDevice.mounted()) {
     TinyUSBDevice.task();
   }
 #endif
+  MIDI->read();
+  MIDI_IF_1.read();
   knobs.tick();
   touch.tick();
   debounced_button.tick();
@@ -170,4 +171,18 @@ void Device::midiPanic() {
     }
     MIDI_IF_1.sendControlChange(123, 0, i);
   }
+}
+
+void Device::setHandleNoteOn(void (*f)(byte channel, byte pitch, byte velocity)) {
+  if (TinyUSBDevice.mounted()) {
+    MIDI->setHandleNoteOn(f);
+  }
+  MIDI_IF_1.setHandleNoteOn(f);
+}
+
+void Device::setHandleNoteOff(void (*f)(byte channel, byte pitch, byte velocity)) {
+  if (TinyUSBDevice.mounted()) {
+    MIDI->setHandleNoteOff(f);
+  }
+  MIDI_IF_1.setHandleNoteOff(f);
 }

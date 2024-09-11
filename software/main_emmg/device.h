@@ -16,12 +16,11 @@
 #include <Arduino.h>
 #include <Adafruit_TinyUSB.h>
 #include <MIDI.h>
+#include "config.h"
 #include "debouncer.h"
 #include "debug.h"
 #include "display.h"
 #include "piomidi.h"
-
-#define BUTTON_PIN 5
 
 
 class Device {
@@ -42,10 +41,14 @@ public:
   void sendNoteOn(uint8_t, uint8_t, uint8_t);
   void sendNoteOff(uint8_t, uint8_t, uint8_t);
   void midiPanic();
+
+  void setHandleNoteOn(void (*)(byte channel, byte pitch, byte velocity));
+  void setHandleNoteOff(void (*)(byte channel, byte pitch, byte velocity));
+  
   Display display;
 
   midi::MidiInterface<midi::SerialMIDI<Adafruit_USBD_MIDI> >* MIDI = nullptr;
-private: 
+private:
   int knobValues[8];
   bool buttonState;
   Debouncer debounced_button;
