@@ -347,7 +347,7 @@ public:
       m_program_table_panel[i][PANEL_SCALE    ] = DEFAULT_PANEL_SCALE    ;
       m_program_table_panel[i][PANEL_TRANSPOSE] = DEFAULT_PANEL_TRANSPOSE;
       m_program_table_panel[i][PANEL_PLAY_MODE] = DEFAULT_PANEL_PLAY_MODE;
-      m_program_table_panel[i][PANEL_MIDI_CH  ] = g_midi_ch              ;
+      m_program_table_panel[i][PANEL_MIDI_CH  ] =  PRA32_U_MIDI_CH             ;
 
       m_program_table_panel[i][PANEL_PLAY_PIT ] = DEFAULT_PANEL_PLAY_PIT ;
       m_program_table_panel[i][PANEL_PLAY_VELO] = DEFAULT_PANEL_PLAY_VELO;

@@ -27,7 +27,7 @@
 #define PRA32_U_I2S_SWAP_LEFT_AND_RIGHT (false)
 
 #define PRA32_U_I2S_BUFFERS (4)
-#define PRA32_U_I2S_BUFFER_WORDS (196)
+#define PRA32_U_I2S_BUFFER_WORDS (256)
 
 //#define PRA32_U_USE_PWM_AUDIO_INSTEAD_OF_I2S
 
@@ -72,7 +72,7 @@
 
 void __not_in_flash_func(synth_setup)();
 void __not_in_flash_func(synth_setup_core1)();
-void __not_in_flash_func(synth_loop)(void (*)());
+void __not_in_flash_func(synth_loop)();
 void __not_in_flash_func(synth_loop1)();
 
 namespace PRA32_U {

@@ -28,7 +28,7 @@ private:
     uint16_t touchThreshold;
     uint16_t readCapacitance();
     uint8_t numSamples = 5; // If you modify that you will likely have to modify offsetThreshold as well; 
-    uint16_t offsetThreshold = 10 * numSamples;
+    uint16_t offsetThreshold = 5 * numSamples;
 };
 
 class MultiTouch {

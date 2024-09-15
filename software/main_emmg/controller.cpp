@@ -35,11 +35,12 @@ void SetupMenuState::setFromKnob(uint8_t value) {
 }
 
 
-
 ControllerMode::ControllerMode(Device& device)
   : device(device) {
   ControllerModeInstance = this;
 }
+
+
 
 void ControllerMode::begin() {
   if (!storage.init()) {
@@ -67,7 +68,7 @@ void ControllerMode::begin() {
   ready = true;
 }
 
-void ControllerMode::loop() {
+void __not_in_flash_func(ControllerMode::loop)() {
   device.poll();
   //if (clear_updated) updated = false;
   //if (updated) {

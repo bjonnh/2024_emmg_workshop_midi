@@ -15,7 +15,12 @@
 #include <Wire.h>
 #include <EEPROM.h>
 #include "config.h"
+
+// The modes
 #include "controller.h"
+#include "synth.h"
+
+// The parts
 #include "device.h"
 #include "display.h"
 #include "piomidi.h"
@@ -26,6 +31,7 @@ Adafruit_USBD_MIDI usb_midi;
 MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
 Device device;
 ControllerMode controller(device);
+SynthMode synth(device);
 
 
 volatile bool core_0_ready = false;
@@ -44,9 +50,9 @@ BootMode getBootMode() {
   gpio_set_pulls(BUTTON_PIN, true, false);
   delay(10);
 
-  return BootMode::SYNTH;
+  //return BootMode::CONTROLLER;
 
-  if (!gpio_get(BUTTON_PIN)) {
+  if (gpio_get(BUTTON_PIN)) {
     return BootMode::SYNTH;
   } else {
     return BootMode::CONTROLLER;
@@ -57,6 +63,8 @@ volatile BootMode bootMode = BootMode::CONTROLLER;
 
 void setup() {
   // We check if the button was pressed, in which case we switch to synth mode
+  USBDevice.setManufacturerDescriptor("bjonnh.net");
+  USBDevice.setProductDescriptor("EMMG MIDI 2024 @PS1");
   MIDI.begin(MIDI_CHANNEL_OMNI);
 
   Serial.begin(9600);
@@ -71,8 +79,6 @@ void setup() {
 
   SERIAL_PRINTLN("Starting up");
   SERIAL_PRINTLN("Starting MIDI USB");
-  USBDevice.setManufacturerDescriptor("bjonnh.net                     ");
-  USBDevice.setProductDescriptor("EMMG MIDI 2024 @PS1           ");
 
   if (!TinyUSBDevice.isInitialized()) {
     TinyUSBDevice.begin(0);
@@ -94,18 +100,7 @@ void setup() {
   switch (bootMode) {
     case BootMode::SYNTH:
       SERIAL_PRINTLN("Booting synth mode");
-      synth_setup();
-      device.setHandleNoteOn(PRA32_U::handleNoteOn);
-      device.setHandleNoteOff(PRA32_U::handleNoteOff);
-      device.setKnobCallback(PRA32_U::handleController);
-      device.setTouchPadCallback(PRA32_U::handleTouch);
-      //  USB_MIDI.setHandleControlChange(handleControlChange);
-      //  USB_MIDI.setHandleProgramChange(handleProgramChange);
-      //  USB_MIDI.setHandlePitchBend(handlePitchBend);
-      //  USB_MIDI.setHandleClock(handleClock);
-      //  USB_MIDI.setHandleStart(handleStart);
-      //  USB_MIDI.setHandleStop(handleStop);
-
+      synth.begin();
       break;
     case BootMode::CONTROLLER:
       SERIAL_PRINTLN("Booting controller mode");
@@ -121,41 +116,36 @@ void setup1() {
 
   switch (bootMode) {
     case BootMode::SYNTH:
-      synth_setup_core1();
+      synth.setup_core1();
       break;
     case BootMode::CONTROLLER:
       break;
   }
 }
 
-void __not_in_flash_func(poll)() {
- // device.MIDI->read();
-  device.poll();
-}
-
 void __not_in_flash_func(loop)() {
   //if (!Serial) { Serial.begin(9600); }
 
-  //switch (bootMode) {
-   // case BootMode::SYNTH:
-      synth_loop(poll);
-   //   break;
-   // case BootMode::CONTROLLER:
-  //    controller.loop();
-   //   break;
- // }
+  switch (bootMode) {
+    case BootMode::SYNTH:
+      synth.loop();
+      break;
+    case BootMode::CONTROLLER:
+      controller.loop();
+      break;
+  }
 }
 
 void __not_in_flash_func(loop1)() {
   // YOU ARE NOT ALLOWED TO MODIFY ANYTHING IN THERE EXCEPT clear_updated
 
   // TODO: Switch that to a function reference
- // switch (bootMode) {
-  //  case BootMode::SYNTH:
-      synth_loop1();
-  //    break;
-   // case BootMode::CONTROLLER:
-    //  controller.update();
-    //  break;
- // }
+  switch (bootMode) {
+    case BootMode::SYNTH:
+      synth.loop1();
+      break;
+    case BootMode::CONTROLLER:
+      controller.update();
+      break;
+  }
 }

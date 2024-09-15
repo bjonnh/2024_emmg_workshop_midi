@@ -10,69 +10,51 @@
  *
  */
 
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#ifndef SYNTH_H
+#define SYNTH_H
 
-#include "controllersettings.h"
 #include "device.h"
 #include "display.h"
 #include "storage.h"
+#include "pra32-u.h"
 
-
-enum class ControllerModeState {
+enum class SynthModeState {
   NORMAL,
-  SETUP_MENU,
-  CONTROLLER_SETUP,
-  PAD_SETUP,
-  LOAD,
-  SAVE,
-  PANIC
 };
 
-class SetupMenuState {
+class SynthMode {
 public:
-  void setFromKnob(uint8_t value);
-  ControllerModeState selected_state = ControllerModeState::NORMAL;
-};
-
-class ControllerSetupState {
-public:
-  uint8_t controller = 0;
-  Controller settings;
-};
-
-class PadSetupState {
-public:
-  uint8_t pad = 0;
-  Pad settings;
-};
-
-
-class ControllerMode {
-public:
-  ControllerMode(Device& device);
+  SynthMode(Device& device);
   void begin();
+  void setup_core1();
+  void loop1();
   void loop();
   void onKnobChange(uint8_t id, uint8_t value);
   void onTouchPadChange(uint8_t id, uint8_t value);
   void onButtonChange(uint8_t id, uint8_t value);
   void update();
+  void handleNoteOn(byte channel, byte pitch, byte velocity);
+  void handleNoteOff(byte channel, byte pitch, byte velocity);
+  void handleControlChange(byte channel, byte number, byte value);
+  void handleProgramChange(byte channel, byte number);
+  void handlePitchBend(byte channel, int bend);
+  void handleClock();
+  void handleStart();
+  void handleStop();
+  void handleKnob(uint8_t knob, uint8_t value);
+  void handleTouch(uint8_t pad, uint8_t value);
+  void updateAll();
+
 private:
   void display_normal_mode();
-  void display_setup_menu();
-  void display_controller_setup();
-  void display_pad_setup();
-  volatile bool updated = false; // can only be written to by core0
-  volatile bool clear_updated = false; // can only be written to by core1
+  volatile bool updated = false;        // can only be written to by core0
+  volatile bool clear_updated = false;  // can only be written to by core1
   Device& device;
-  SetupMenuState setup_menu_state;
-  ControllerSettings controller_settings;
   Storage storage;
-  ControllerModeState current_state = ControllerModeState::NORMAL;
-  ControllerSetupState controller_setup_state;
-  PadSetupState pad_setup_state;
+  SynthModeState current_state = SynthModeState::NORMAL;
   uint8_t last_forced_update = 0;
   bool ready = false;
 };
+
 
 #endif

@@ -42,8 +42,8 @@ uint16_t __not_in_flash_func(Touch::readCapacitance)() {
     gpio_set_dir(touchPin, GPIO_IN);
 
     while (gpio_get(touchPin)) {
-      if (ticks >= 5000) {
-        return 5000;
+      if (ticks >= 10000) {
+        return 10000;
       }
       ticks++;
     }
@@ -77,7 +77,7 @@ bool __not_in_flash_func(MultiTouch::isTouched)(uint8_t index) {
   return sensors[index]->isTouched();
 }
 
-int MultiTouch::getFirstTouch() {
+int __not_in_flash_func(MultiTouch::getFirstTouch)() {
   tick();
   for (int i = 0; i < sensorCount; i++) {
     if (touches[i]) {
@@ -105,6 +105,6 @@ void __not_in_flash_func(MultiTouch::tick)() {
   }
 }
 
-bool *MultiTouch::getTouches() {
+bool * __not_in_flash_func(MultiTouch::getTouches)() {
   return touches;
 }
