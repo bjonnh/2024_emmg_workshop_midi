@@ -11,10 +11,10 @@
  */
 
 #include "touch.h"
+#include "debug.h"
 
 Touch::Touch(int pin, unsigned long threshold)
   : touchPin(pin), touchThreshold(threshold) {
-  
 }
 
 bool __not_in_flash_func(Touch::isTouched)() {
@@ -25,11 +25,17 @@ bool __not_in_flash_func(Touch::isTouched)() {
 void Touch::calibrate() {
   gpio_init(touchPin);
   gpio_set_dir(touchPin, GPIO_IN);
+  delay(10);  // We have an issue with the first one
   // Calibrate the touch sensor to set a proper threshold
   uint16_t baseline = 0;
 
+  baseline = readCapacitance();  // One turn for nothing
   baseline = readCapacitance();
   touchThreshold = baseline * 1.2 + offsetThreshold;  // Add some margin
+  SERIAL_PRINT("Pin ");
+  SERIAL_PRINT(touchPin);
+  SERIAL_PRINT(" calibration ");
+  SERIAL_PRINTLN(touchThreshold);
 }
 
 uint16_t __not_in_flash_func(Touch::readCapacitance)() {
@@ -65,6 +71,10 @@ MultiTouch::MultiTouch() {
 }
 
 void MultiTouch::calibrateAll() {
+  for (int i = 0; i < sensorCount; i++) {
+    sensors[i]->calibrate();
+  }
+  // Some how the first pin of the first calibration is never great
   for (int i = 0; i < sensorCount; i++) {
     sensors[i]->calibrate();
   }
@@ -105,6 +115,6 @@ void __not_in_flash_func(MultiTouch::tick)() {
   }
 }
 
-bool * __not_in_flash_func(MultiTouch::getTouches)() {
+bool *__not_in_flash_func(MultiTouch::getTouches)() {
   return touches;
 }

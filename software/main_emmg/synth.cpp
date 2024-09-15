@@ -90,8 +90,7 @@ void SynthMode::begin() {
   //  USB_MIDI.setHandleStop(handleStop);
 }
 
-void SynthMode::setup_core1() {
-}
+void SynthMode::setup_core1() {}
 
 void __not_in_flash_func(SynthMode::loop1)() {
   boolean processed = g_synth.secondary_core_process();
@@ -160,18 +159,26 @@ volatile uint8_t lastSettings[128] = { 0 };
 
 
 void __not_in_flash_func(SynthMode::updateAll)() {
-  uint8_t toUpdate[] = { 74, 71, 92 };
+  uint8_t toUpdate[] = { 74, 71, 92, 27, 58, 59 };
   for (uint8_t i = 0; i < sizeof(toUpdate); i++) {
     g_synth.control_change(toUpdate[i], lastSettings[toUpdate[i]]);
   }
 }
 
-
+uint8_t current_program = 0;
 void __not_in_flash_func(SynthMode::handleKnob)(uint8_t knob, uint8_t value) {
+  uint8_t program = 0;
   switch (knob) {
     case 0:
-      g_synth.program_change(value / 8);
-      updateAll();
+      program = value / 7;
+      if (program > 15) {
+        program = 128;  // Random program
+      }
+      if (current_program != program) {
+        g_synth.program_change(program);
+        updateAll();
+        current_program = program;
+      }
       break;
     case 1:
       g_synth.control_change(74, value);
@@ -184,6 +191,18 @@ void __not_in_flash_func(SynthMode::handleKnob)(uint8_t knob, uint8_t value) {
     case 3:
       g_synth.control_change(92, value);
       lastSettings[92] = value;
+      break;
+    case 4:
+      g_synth.control_change(27, value);
+      lastSettings[27] = value;
+      break;
+    case 5:
+      g_synth.control_change(58, value);
+      lastSettings[58] = value;
+      break;
+    case 6:
+      g_synth.control_change(59, value);
+      lastSettings[59] = value;
       break;
   }
 }

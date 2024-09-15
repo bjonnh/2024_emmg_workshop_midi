@@ -13,10 +13,16 @@
 #ifndef SYNTH_H
 #define SYNTH_H
 
+#include <Arduino.h>
+#include <MIDI.h>
+#include <I2S.h>
+
+
 #include "device.h"
 #include "display.h"
 #include "storage.h"
 #include "pra32-u.h"
+
 
 enum class SynthModeState {
   NORMAL,
