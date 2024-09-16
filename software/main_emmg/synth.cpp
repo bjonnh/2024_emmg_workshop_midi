@@ -214,3 +214,16 @@ void __not_in_flash_func(SynthMode::handleTouch)(uint8_t pad, uint8_t value) {
     g_synth.note_off(50 + pad);
   }
 }
+/*
+void __not_in_flash_func(SynthMode::updateDisplay)() {
+  device.display.adisplay->clearDisplay();
+  device.display.adisplay->setFont(&FreeSans9pt7b);
+  device.display.adisplay->setTextSize(1);
+  device.display.adisplay->setTextColor(SSD1306_WHITE);
+  device.display.adisplay->setCursor(0, 61);
+  if (controller_setup_state.controller < 8) {
+    device.display.adisplay->print("Synth ");
+  }
+}
+*/
+
