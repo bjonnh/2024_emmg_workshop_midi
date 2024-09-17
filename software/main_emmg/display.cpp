@@ -18,7 +18,7 @@ Display::Display() {};
 
 void Display::begin() {
 
-  adisplay = new Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1);
+  adisplay = new Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire1, -1, 1000000, 1000000);
   SERIAL_PRINTLN("Booting display");
   
 

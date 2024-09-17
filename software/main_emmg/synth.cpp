@@ -104,7 +104,7 @@ void __not_in_flash_func(SynthMode::loop1)() {
 }
 
 void __not_in_flash_func(SynthMode::loop)() {
-  device.poll();
+
   int16_t left_buffer[PRA32_U_I2S_BUFFER_WORDS];
   int16_t right_buffer[PRA32_U_I2S_BUFFER_WORDS];
   for (uint32_t i = 0; i < PRA32_U_I2S_BUFFER_WORDS; i++) {
@@ -118,6 +118,10 @@ void __not_in_flash_func(SynthMode::loop)() {
       g_i2s_output.write16(left_buffer[i], right_buffer[i]);
     }
   }
+  device.poll();
+  if (updated) {
+      updateDisplay();
+    }
 }
 
 void __not_in_flash_func(SynthMode::handleNoteOn)(byte channel, byte pitch, byte velocity) {
@@ -166,8 +170,18 @@ void __not_in_flash_func(SynthMode::updateAll)() {
 }
 
 uint8_t current_program = 0;
+
 void __not_in_flash_func(SynthMode::handleKnob)(uint8_t knob, uint8_t value) {
-  uint8_t program = 0;
+  switch (knob) {
+    case 0:
+      uint8_t new_page = map(value, 0, 127, 0, SynthParameters::Interface1.pageCount - 1);
+      if (new_page != current_page) {
+        current_page = new_page;
+        updated = true;
+      }
+      break;
+  }
+  /*uint8_t program = 0;
   switch (knob) {
     case 0:
       program = value / 7;
@@ -204,7 +218,7 @@ void __not_in_flash_func(SynthMode::handleKnob)(uint8_t knob, uint8_t value) {
       g_synth.control_change(59, value);
       lastSettings[59] = value;
       break;
-  }
+  }*/
 }
 
 void __not_in_flash_func(SynthMode::handleTouch)(uint8_t pad, uint8_t value) {
@@ -214,16 +228,34 @@ void __not_in_flash_func(SynthMode::handleTouch)(uint8_t pad, uint8_t value) {
     g_synth.note_off(50 + pad);
   }
 }
-/*
-void __not_in_flash_func(SynthMode::updateDisplay)() {
-  device.display.adisplay->clearDisplay();
-  device.display.adisplay->setFont(&FreeSans9pt7b);
-  device.display.adisplay->setTextSize(1);
-  device.display.adisplay->setTextColor(SSD1306_WHITE);
-  device.display.adisplay->setCursor(0, 61);
-  if (controller_setup_state.controller < 8) {
-    device.display.adisplay->print("Synth ");
-  }
-}
-*/
 
+void __not_in_flash_func(SynthMode::updateDisplay)() {
+  const SynthParameters::Page* page = &(SynthParameters::Interface1.pages[current_page]);
+  switch (current_update_phase) {
+    case 0:
+      device.display.adisplay->clearDisplay();
+      device.display.adisplay->setFont(&FreeSans9pt7b);
+      device.display.adisplay->setTextSize(1);
+      device.display.adisplay->setTextColor(SSD1306_WHITE);
+      device.display.adisplay->setCursor(0, 61);
+      break;
+    case 1:
+
+      device.display.adisplay->print(page->name);
+      device.display.adisplay->setFont();
+      break;
+    case 2:
+      for (uint8_t param = 0; param < page->paramsCount; param++) {
+        device.display.adisplay->setCursor(30 * ((param + 1) % 4), 8 + 24 * ((param + 1) / 4));
+        device.display.adisplay->print(page->params[param].short_name);
+      }
+      break;
+    case 3:
+      device.display.adisplay->display();
+      updated = false;
+      break;
+  }
+  
+  current_update_phase++;
+  current_update_phase = current_update_phase % 4;
+}
