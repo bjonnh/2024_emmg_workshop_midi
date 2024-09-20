@@ -17,7 +17,7 @@
 #include <MIDI.h>
 #include <I2S.h>
 
-
+#include "debug.h"
 #include "device.h"
 #include "display.h"
 #include "storage.h"
@@ -166,6 +166,19 @@ private:
   volatile bool clear_updated = false;  // can only be written to by core1
   uint8_t current_page = 0;
   uint8_t current_update_phase = 0;
+  bool currently_moving = false;
+  uint8_t currently_moving_reset_cycles = 0;  // We decrement each display and set currently moving to false once done.
+  uint8_t currently_moved_knob = 0;
+  uint8_t currently_moved_value = 0;
+  bool currently_moved_catch = false;
+  uint8_t currently_moved_current_value = 0;
+
+  uint8_t current_program = 0;
+
+  bool params_crossed[7] = { false };
+  bool direction[7] = { false };      // false, you have to go above or equal current_values to catch
+  uint8_t current_values[7] = { 0 };  // The current values inside the synth so we can do a crossing
+
   Device& device;
   Storage storage;
   SynthModeState current_state = SynthModeState::NORMAL;

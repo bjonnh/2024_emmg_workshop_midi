@@ -47,22 +47,6 @@ void SynthMode::begin() {
   g_i2s_output.setBuffers(PRA32_U_I2S_BUFFERS, PRA32_U_I2S_BUFFER_WORDS);
   g_i2s_output.begin();
 
-  //#if defined(PRA32_U_USE_USB_MIDI)
-  //  TinyUSB_Device_Init(0);
-  //  USBDevice.setManufacturerDescriptor("ISGK Instruments");
-  // USBDevice.setProductDescriptor("Digital Synth PRA32-U");
-  //  USB_MIDI.setHandleNoteOn(handleNoteOn);
-  //  USB_MIDI.setHandleNoteOff(handleNoteOff);
-  //  USB_MIDI.setHandleControlChange(handleControlChange);
-  //  USB_MIDI.setHandleProgramChange(handleProgramChange);
-  //  USB_MIDI.setHandlePitchBend(handlePitchBend);
-  //  USB_MIDI.setHandleClock(handleClock);
-  //  USB_MIDI.setHandleStart(handleStart);
-  //  USB_MIDI.setHandleStop(handleStop);
-  //  USB_MIDI.begin(MIDI_CHANNEL_OMNI);
-  //  USB_MIDI.turnThruOff();
-  //#endif  // defined(PRA32_U_USE_USB_MIDI)
-
   g_synth.initialize();
 
   delay(100);
@@ -81,13 +65,6 @@ void SynthMode::begin() {
   device.setHandleNoteOff([](byte channel, byte pitch, byte velocity) {
     SynthModeInstance->handleNoteOff(channel, pitch, velocity);
   });
-
-  //  USB_MIDI.setHandleControlChange(handleControlChange);
-  //  USB_MIDI.setHandleProgramChange(handleProgramChange);
-  //  USB_MIDI.setHandlePitchBend(handlePitchBend);
-  //  USB_MIDI.setHandleClock(handleClock);
-  //  USB_MIDI.setHandleStart(handleStart);
-  //  USB_MIDI.setHandleStop(handleStop);
 }
 
 void SynthMode::setup_core1() {}
@@ -120,8 +97,8 @@ void __not_in_flash_func(SynthMode::loop)() {
   }
   device.poll();
   if (updated) {
-      updateDisplay();
-    }
+    updateDisplay();
+  }
 }
 
 void __not_in_flash_func(SynthMode::handleNoteOn)(byte channel, byte pitch, byte velocity) {
@@ -163,22 +140,74 @@ volatile uint8_t lastSettings[128] = { 0 };
 
 
 void __not_in_flash_func(SynthMode::updateAll)() {
-  uint8_t toUpdate[] = { 74, 71, 92, 27, 58, 59 };
-  for (uint8_t i = 0; i < sizeof(toUpdate); i++) {
-    g_synth.control_change(toUpdate[i], lastSettings[toUpdate[i]]);
-  }
+  
 }
 
-uint8_t current_program = 0;
-
 void __not_in_flash_func(SynthMode::handleKnob)(uint8_t knob, uint8_t value) {
+  uint8_t program = 0;
+  const SynthParameters::Page* page = &(SynthParameters::Interface1.pages[current_page]);
+  bool crossed = false;
+  if (currently_moving) {
+    if (currently_moving_reset_cycles <= 0) {
+      currently_moving = false;
+    } else {
+      currently_moving_reset_cycles--;
+    }
+  }
   switch (knob) {
     case 0:
-      uint8_t new_page = map(value, 0, 127, 0, SynthParameters::Interface1.pageCount - 1);
-      if (new_page != current_page) {
-        current_page = new_page;
-        updated = true;
+      if (device.getButtonValue()) {
+        program = value / 7;
+        if (program > 15) {
+          program = 128;  // Random program
+        }
+        if (current_program != program) {
+          g_synth.program_change(program);
+          updateAll();
+          for (uint8_t param = 0; param < 7; param++) {
+            params_crossed[param] = false;
+            current_values[param] = g_synth.current_controller_value(SynthParameters::Interface1.pages[current_page].params[param].cc);
+            direction[param] = device.getKnobValue(param) < current_values[param];
+          }
+          current_program = program;
+          updated = true;
+        }
+      } else {
+        uint8_t new_page = map(value, 0, 127, 0, SynthParameters::Interface1.pageCount - 1);
+        if (new_page != current_page) {
+          current_page = new_page;
+          // We try to determine when the user crossed the current value in the synthesizer so we avoid jumping values when turning pages
+          // param is knob - 1 as we don't use the first knob
+          for (uint8_t param = 0; param < 7; param++) {
+            params_crossed[param] = false;
+            current_values[param] = g_synth.current_controller_value(SynthParameters::Interface1.pages[current_page].params[param].cc);
+            direction[param] = device.getKnobValue(param) < current_values[param];
+          }
+          updated = true;
+        }
       }
+      break;
+    default:
+      if (!params_crossed[knob - 1]) {
+        if (direction) {
+          // we have to go lower than current value to cross
+          params_crossed[knob - 1] = value <= current_values[knob - 1];
+        } else {
+          // we have to go above current value to cross
+          params_crossed[knob - 1] = value >= current_values[knob - 1];
+        }
+      }
+      if (params_crossed[knob - 1]) {
+        g_synth.control_change(page->params[knob - 1].cc, value);
+        current_values[knob - 1] = value;
+      }
+      currently_moving = true;
+      currently_moving_reset_cycles = 100;
+      currently_moved_knob = knob;
+      currently_moved_value = value;
+      currently_moved_catch = params_crossed[knob - 1];
+      uint8_t currently_moved_current_value = current_values[knob - 1];
+      updated = true;
       break;
   }
   /*uint8_t program = 0;
@@ -242,12 +271,17 @@ void __not_in_flash_func(SynthMode::updateDisplay)() {
     case 1:
 
       device.display.adisplay->print(page->name);
-      device.display.adisplay->setFont();
+      
       break;
     case 2:
+      device.display.adisplay->setCursor(4, 14);
+      device.display.adisplay->print(current_program);
+      device.display.adisplay->setFont();
       for (uint8_t param = 0; param < page->paramsCount; param++) {
-        device.display.adisplay->setCursor(30 * ((param + 1) % 4), 8 + 24 * ((param + 1) / 4));
+        device.display.adisplay->setCursor(30 * ((param + 1) % 4), 2 + 24 * ((param + 1) / 4));
         device.display.adisplay->print(page->params[param].short_name);
+        device.display.adisplay->setCursor(30 * ((param + 1) % 4), 14 + 24 * ((param + 1) / 4));
+        device.display.adisplay->print(current_values[param]);
       }
       break;
     case 3:
@@ -255,7 +289,7 @@ void __not_in_flash_func(SynthMode::updateDisplay)() {
       updated = false;
       break;
   }
-  
+
   current_update_phase++;
   current_update_phase = current_update_phase % 4;
 }
