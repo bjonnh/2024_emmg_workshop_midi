@@ -17,9 +17,9 @@ jobs:
     - name: Run compile script in Docker container
       run: |
         docker run --rm \
-          -v ${{ github.workspace }}/software/main_emmg:/src \
+          -v ${{ github.workspace }}/software:/src \
           my-image \
-          /bin/sh -c "cd /src && ./compile.sh"
+          /bin/sh -c "cd /src/main_emmg && ./compile.sh"
 
     - name: Create Release
       id: create_release
