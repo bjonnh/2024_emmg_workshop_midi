@@ -3,6 +3,10 @@ name: Build and Create Release
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
