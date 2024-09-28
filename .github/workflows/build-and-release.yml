@@ -1,4 +1,4 @@
-name: Build Docker Image and Create Release
+name: Build and Create Release
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build Docker image
-      run: docker build -t my-image -f tools/Dockerfile .
+      run: docker build -t my-image -f tools/Dockerfile ./tools
 
     - name: Run compile script in Docker container
       run: |
