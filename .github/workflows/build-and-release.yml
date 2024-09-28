@@ -25,21 +25,18 @@ jobs:
           my-image \
           /bin/sh -c "cd /src/main_emmg && ./compile.sh"
 
+    - name: Generate release tag
+      id: tag
+      run: |
+        echo "::set-output name=release_tag::release-$(date +'%Y.%m.%d-%H%M%S')"
+
     - name: Create Release
-      id: create_release
       uses: softprops/action-gh-release@v2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}-${{ github.sha }}
-        name: Release ${{ github.ref }}-${{ github.sha }}
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        name: Release ${{ steps.tag.outputs.release_tag }}
         draft: false
         prerelease: false
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
+        files: ./software/main_emmg/build/main_emmg.ino.uf2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        files: ./software/main_emmg/build/main_emmg.ino.uf2
-
