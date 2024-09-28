@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Build Docker image
       run: docker build -t my-image -f tools/Dockerfile ./tools
@@ -23,12 +23,12 @@ jobs:
 
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}-${{ github.sha }}
-        release_name: Release ${{ github.ref }}-${{ github.sha }}
+        name: Release ${{ github.ref }}-${{ github.sha }}
         draft: false
         prerelease: false
 
@@ -37,8 +37,5 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./software/main_emmg/build/main_emmg.ino.uf2
-        asset_name: main_emmg.ino.uf2
-        asset_content_type: application/octet-stream
+        files: ./software/main_emmg/build/main_emmg.ino.uf2
 
