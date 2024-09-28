@@ -50,9 +50,7 @@ BootMode getBootMode() {
   gpio_set_pulls(BUTTON_PIN, true, false);
   delay(10);
 
-  //return BootMode::CONTROLLER;
-
-  if (gpio_get(BUTTON_PIN)) {
+  if (!gpio_get(BUTTON_PIN)) {
     return BootMode::SYNTH;
   } else {
     return BootMode::CONTROLLER;

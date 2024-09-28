@@ -1,2 +1,1 @@
 default_fqbn: rp2040:rp2040:vccgnd_yd_rp2040:usbstack=tinyusb,flash=4194304_2097152
-default_port: /dev/ttyACM0

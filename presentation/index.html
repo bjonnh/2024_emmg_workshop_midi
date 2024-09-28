@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="css/slides-extended.css" />
+    <link rel="stylesheet" href="zz_themes/slides/bjonnh/bjonnh.css" id="theme" />
+    <link rel="stylesheet" href="plugin/highlight/zenburn.css" />
+    <link rel="stylesheet" href="plugin/customcontrols/style.css">
+
+
+
+    <script defer src="dist/fontawesome/all.min.js"></script>
+
+    <script type="text/javascript">
+        function pageInIframe() {
+            return (window.location !== window.parent.location);
+        }
+
+        let forgetPop = true;
+        function onPopState(event) {
+            if(forgetPop){
+                forgetPop = false;
+            } else if( pageInIframe()) {
+                parent.postMessage(event.target.location.href, "app://obsidian.md");
+            }
+        }
+        window.onpopstate = onPopState;
+        window.onmessage = event => {
+            if(event.data == "reload"){
+                window.document.location.reload();
+            }
+            forgetPop = true;
+        }
+
+        function fitElements() {
+            const itemsToFit = document.getElementsByClassName('fitText');
+            for (const item in itemsToFit) {
+                if (Object.hasOwnProperty.call(itemsToFit, item)) {
+                    const element = itemsToFit[item];
+                    fitElement(element, 1, 1000);
+                    element.classList.remove('fitText');
+                }
+            }
+        }
+
+        function fitElement(element, start, end) {
+
+            let size = (end + start) / 2;
+            element.style.fontSize = `${size}px`;
+
+            if (Math.abs(start - end) < 1) {
+                while (element.scrollHeight > element.offsetHeight) {
+                    size--;
+                    element.style.fontSize = `${size}px`;
+                }
+                return;
+            }
+
+            if (element.scrollHeight > element.offsetHeight) {
+                fitElement(element, start, size);
+            } else {
+                fitElement(element, size, end);
+            }
+        }
+
+
+        document.onreadystatechange = () => {
+            fitElements();
+            if (document.readyState === 'complete') {
+                if (pageInIframe() && window.location.href.indexOf("?export") != -1){
+                    parent.postMessage(event.target.location.href, "app://obsidian.md");
+                }
+                if (window.location.href.indexOf("print-pdf") != -1){
+                    let stateCheck = setInterval(() => {
+                        clearInterval(stateCheck);
+                        window.print();
+                    }, 250);
+                }
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# EMMG 2024 Midi Workshop
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Organization
+
+| Time        | Activity                             |
+| ----------- | ------------------------------------ |
+| 12:00-12:30 | Eat and socialize                    |
+| 12:30-13:00 | Introduction to Midi and controllers |
+| 13:00-13:30 | Play with the device: full program   |
+| 13:30-13:45 | Group activity                       |
+| 13:45-14:00 | How this device was designed         |
+| 14:00-14:30 | Where to go next and questions       |
+| 14:30-???   | Free time                            |
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## What MIDI is
+
+MIDI stands for **Musical Instrument Digital Interface**
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## History: 850 to 1850
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923203944.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+https://midi.org/the-history-of-midi
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## History: 1850 - 1930
+
+<split even>
+<div>
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923204416.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+https://midi.org/the-history-of-midi
+
+</div>
+</div>
+<div>
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923204346.png" alt="" style="object-fit: scale-down">
+
+
+<div class="small">
+
+[Westworld](https://www.imdb.com/title/tt0475784/)
+
+</div>
+</div>
+</split>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## History: 1900s
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/8WoNlMsFF60?si=e7uCmdLFUUoqapwg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<split even>
+<div>
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923210026.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+[Washington Post - Wendy Carlos](https://www.washingtonpost.com/outlook/wendy-carlos-the-electronic-music-pioneer-who-happens-to-be-transgender/2020/10/22/fa4f511e-d5ac-11ea-930e-d88518c57dcc_story.html)
+
+</div>
+</div>
+<div>
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923210236.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+https://midi.org/the-history-of-midi
+
+</div>
+
+</div>
+</split>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Physical
+
+<div class="" style="position: absolute; left: 7.5%; top: 7.5%; height: 85%; width: 85%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922131821.png" alt="" style="object-fit: scale-down">
+
+</div>
+<div class="" style="position: absolute; left: 5%; top: 80%; height: 40%; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<div class="small">
+
+[By :en:Pretzelpaws CC BY-SA 3.0](https://commons.wikimedia.org/w/index.php?curid=142551)
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922132050.png" alt="" style="object-fit: scale-down">
+
+
+<div class="" style="position: absolute; left: 5%; top: 80%; height: 40%; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<div class="small">
+
+[v., CC BY-SA 4.0](https://commons.wikimedia.org/w/index.php?curid=36160510)
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="small">
+
+
+```shell
+ 
+----|---|--\
+    |   |   >
+----|---|--/
+  S   R   T
+ 
+```
+
+| TRS | Type B | Type A TRS (MIDI 2.0) | Type C TS only |
+| --- | ------ | --------------------- | -------------- |
+| S   | Shield | Shield                | Sink           |
+| R   | Sink   | Source                | Sink           |
+| T   | Source | Sink                  | Source         |
+
+- Type A (The MIDI norm) Korg, Akai
+- Type B Arturia, Old Novation devices (all new Novation devices like the MK3 series are on Type A)
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="small">
+
+
+
+```shell
+                       Female plug seen from the pin sides
+                                       2
+                                       o 
+                                   4 o   o 5 
+                                  1 o     o 3
+                                 
+                                 
+                                   Male plug
+                                       2
+                                       o 
+                                   5 o   o 4 
+                                  3 o     o 1
+                                 
+```
+
+| DIN | Function |
+|-----|----------|
+| 2   | Shield   |
+| 5   | Source   |
+| 4   | Sink     |
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Electrical 
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/shieldec_cable_wikipedia.png" alt="" style="object-fit: scale-down">
+
+
+<div class="" style="position: absolute; left: 5%; top: 80%; height: 40%; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<div class="small">
+
+[source Wikipedia Em3rgent0rdr]( https://en.wikipedia.org/wiki/MIDI)
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Logical
+
+31250 bps - 8-N-1
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/MIDI_byte.svg" alt="" style="object-fit: scale-down">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/MIDI_packets.svg" alt="" style="width: #3px; object-fit: fill">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Hexadecimal is practical to talk about status bytes
+<div class="small">
+
+| Hexa | Binary | Decimal |
+| ---- | ------ | ------- |
+| 0x0  | 0000   | 0       |
+| 0x1  | 0001   | 1       |
+| 0x2  | 0010   | 2       |
+| 0x3  | 0011   | 3       |
+| 0x4  | 0100   | 4       |
+| 0x5  | 0101   | 5       |
+| 0x6  | 0110   | 6       |
+| 0x7  | 0111   | 7       |
+| 0x8  | 1000   | 8       |
+| 0x9  | 1001   | 9       |
+| 0xA  | 1010   | 10      |
+| 0xB  | 1011   | 11      |
+| 0xC  | 1100   | 12      |
+| 0xD  | 1101   | 13      |
+| 0xE  | 1110   | 14      |
+| 0xF  | 1111   | 15      |
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/MIDI_packets.svg" alt="" style="width: #3px; object-fit: fill">
+
+<div class="small">
+
+Status byte is split in two parts:
+- message type (4 bits, 3 usable) 
+- channel (4 bits)
+
+| Hexa | Binary | Message type                                               | Data 1         | Data 2   |
+| ---- | ------ | ---------------------------------------------------------- | -------------- | -------- |
+| 0x8n | 1000   | Note Off                                                   | Note           | Velocity |
+| 0x9n | 1001   | Note On                                                    | Note           | Velocity |
+| 0xAn | 1010   | Polyphonic Aftertouch                                      | Note           | Pressure |
+| 0xBn | 1011   | Control Change                                             | Control Number | Value    |
+| 0xCn | 1100   | Program Change                                             | Program Number | -        |
+| 0xDn | 1101   | Channel Aftertouch                                         | Pressure       | -        |
+| 0xEn | 1110   | Pitch Wheel                                                | LSB            | MSB      |
+| 0xFn | 1111   | Song position/options<br>System exclusive (large messages) |                |          |
+
+LSB: Least Significant Bits - MSB: Most Significant Bits
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Parsing midi
+
+<div class="" style="position: absolute; left: 5%; top: 40%; height: 30%; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<div class="small">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240903220644.png" alt="" style="object-fit: scale-down">
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240903220905.png" alt="" style="object-fit: scale-down">
+
+(source unknown, if you find it I would like to know)
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Controllers
+
+<div class="small">
+
+- Send notes (Note ON/OFF with velocity)
+- CC (values from 0 to 127)
+- (N)RPN (Non-) registered parameters numbers
+    - CC 101 (RPN) or 99 (NRPN) - MSB parameter
+    - CC 100 (RPN) or 98 (NRPN) - LSB parameter
+    - CC 6 - value MSB
+    - CC 38 (optional) - value LSB (fine)
+    - 16k parameters with values from 0 to 16383
+    - We often send CC 101 - 127 followed by CC 100 - 127, the NULL RPN to say the parameter is done (or cancel a previous one)
+
+</div>
+
+TL;DR :
+Notes, controls 0-127 or 0-16384
+
+(we will ignore clock and time for today)
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 40%; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923212928.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+[Wikipedia](https://en.wikipedia.org/wiki/MIDI_controller#/media/File:Roland_AX-1_keytar_midi_controller.JPG)
+</div>
+</div>
+<div class="" style="position: absolute; left: 50%; top: 0%; height: 40%; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923213037.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+[Wikipedia](https://en.wikipedia.org/wiki/MIDI_controller#/media/File:Roland_Octapad_II_Pad-80.jpg)
+</div>
+</div>
+<div class="" style="position: absolute; left: 0%; top: 50%; height: 40%; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923213216.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+[Wikipedia](https://en.wikipedia.org/wiki/MIDI_controller#/media/File:Remote_25.jpg)
+</div>
+</div>
+<div class="" style="position: absolute; left: 50%; top: 50%; height: 40%; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923213238.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+[Wikipedia](https://en.wikipedia.org/wiki/MIDI_controller#/media/File:Onyx_The_Digital_Pied_Piper.jpg)
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 40%; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923213746.png" alt="" style="object-fit: scale-down">
+
+
+<div class="small">
+
+[Imogen Heap and mi.mu gloves](https://www.synthtopia.com/content/2014/04/04/imogen-heap-demos-her-midi-gloves/)
+</div>
+</div>
+
+
+<div class="" style="position: absolute; left: 40%; top: 0%; height: 40%; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923214006.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+[Z7S](https://www.starrlabs.com/product/z7s/)
+</div>
+</div>
+
+
+<div class="" style="position: absolute; left: 0%; top: 50%; height: 40%; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923214342.png" alt="" style="object-fit: scale-down">
+
+
+<div class="small">
+
+[Onyx Ashanti - Beatjazz controller](https://makezine.com/projects/beatjazz-controller/) - 
+[Onyx Ashanty - Ted talk](https://www.ted.com/talks/onyx_ashanti_this_is_beatjazz?subtitle=en)
+</div>
+</div>
+
+<div class="" style="position: absolute; left: 40%; top: 50%; height: 40%; width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923215233.png" alt="" style="object-fit: scale-down">
+
+
+<div class="small">
+
+[Penny Pad](https://www.dancemusicnw.com/penny-pad-pennywild-dance-pad-midi-controller/)
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Play with the device
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/working_device_and_boards_tested.jpg" alt="" style="object-fit: scale-down">
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Group activity
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## The device
+
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/working_device_and_boards_tested.jpg" alt="" style="object-fit: scale-down">
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240903202950.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+
+<div class="mermaid">
+flowchart RL
+   
+    subgraph Processor
+        CPU["RP2040"]
+    end
+    
+    subgraph "Pots"     
+        direction LR
+        MUX[Multiplexer]     
+        P1((P1))
+        Pn((...))
+        P8((P8))  
+    end
+    
+    CPU <--> MUX
+    P1 --> MUX
+    Pn --> MUX
+    P8 --> MUX 
+    CPU --> SCR[Screen]
+    CPU --> AUDIO[Audio card]
+    
+    subgraph Inputs/Outputs
+        MIDI_IN[\"Midi in"/]
+        MIDI_OUT[\"Midi out"/]
+        USB[\"USB MIDI and Serial"/]
+        AUDIO_OUT[\"Audio output"/]
+    end
+    MIDI_IN --> CPU
+    CPU --> MIDI_OUT
+    USB <--> CPU
+    AUDIO --> AUDIO_OUT
+    subgraph "Touchpads"
+        TP1(TP1) --> CPU
+        TPn(...) --> CPU
+        TP3(TP3) --> CPU
+    end
+
+</div>
+
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## RP2040
+
+
+<div class="" style="position: absolute; left: 0%; top: 20%; height: 80%; width: 80%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922145416.png" alt="" style="object-fit: scale-down">
+
+
+
+<div class="small"> 
+
+[RP2040 Datasheet](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf)
+</div>
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Analog pots
+
+
+<div class="" style="position: absolute; left: 0%; top: 20%; height: 80%; width: 80%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922150849.png" alt="" style="object-fit: scale-down">
+
+
+<div class="small">
+
+[By Junkyardsparkle - Wikipedia](https://en.wikipedia.org/wiki/Potentiometer#/media/File:Single-turn_potentiometer_with_internals_exposed,_oblique_view.jpg)
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 20%; height: 60%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922151122.png" alt="" style="object-fit: scale-down">
+
+
+`$V_{out} = \frac{Z_2}{Z_1+Z_2} \cdot V_{in}$`
+
+<div class="small">
+
+[Source velociostrich Wikipedia](https://en.wikipedia.org/wiki/Voltage_divider#/media/File:Impedance_voltage_divider.svg)
+
+</div>
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Multiplexing: more IOs
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="flow_road.svg" alt="" style="object-fit: scale-down">
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922145650.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+[Wikipedia CaesarIII](https://en.wikipedia.org/wiki/Multiplexer#/media/File:Multiplexer2.svg)
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922150615.png" alt="" style="object-fit: scale-down">
+
+
+<div class="small">
+
+[TI Datasheet 74HC4051](https://www.ti.com/lit/ds/symlink/cd74hc4051-ep.pdf)
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## GPIOs
+
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922160554.png" alt="" style="object-fit: scale-down">
+
+
+<div class="small">
+
+[RP2040 Datasheet](https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf)
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Capacitive sensing
+
+
+
+`$V_c(t) = V_0 + (V_f - V_0)(1 - e^{-t/\tau})$`
+
+For discharging:
+
+`$V_d(t) = V_0 \cdot e^{-t/\tau}$`
+
+<div class="small">
+
+
+- `$V_c(t)$` is the voltage during charging at time `$t$`
+- `$V_d(t)$` is the voltage during discharging at time `$t$`
+- `$V_0$` is the initial voltage
+- `$V_f$` is the final (full) voltage for charging (usually the supply voltage)
+- `$t$` is the time
+- `$\tau$` (tau) is the time constant, equal to `$RC$` where `$R$` is the resistance and `$C$` is the capacitance
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/cap_sense.svg" alt="" style="object-fit: scale-down">
+
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922154646.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922155551.png" alt="" style="object-fit: scale-down">
+
+
+<div class="small">
+
+Yellow is the transition zone for the GPIO
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## CircuitPython playground
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## C++
+
+Setting up in the Arduino IDE:
+
+Open up the Arduino IDE and go to File->Preferences.
+
+In the dialog that pops up, enter the following URL in the "Additional Boards Manager URLs" field:
+
+[https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json](https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json)
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240928122416.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## How the device was made
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923220353.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923220430.png" alt="" style="object-fit: scale-down">
+
+
+https://www.kicad.org/
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923220440.png" alt="" style="object-fit: scale-down">
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923220458.png" alt="" style="object-fit: scale-down">
+
+
+https://www.kicad.org/
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 50%; width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923220519.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+<div class="" style="position: absolute; left: 50%; top: 0%; height: 50%; width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923220552.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 50%; height: 50%; width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923220600.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+<div class="" style="position: absolute; left: 50%; top: 50%; height: 50%; width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240923220612.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+https://openscad.org/
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Inspiration
+
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922165719.png" alt="" style="object-fit: scale-down">
+
+<div class="small">
+
+[Picoslidertoy on Tindie](https://www.tindie.com/products/todbot/picoslidertoy-capsense-controller-for-pico/)
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922165839.png" alt="" style="object-fit: scale-down">
+
+
+<div class="small">
+
+[Pico test synth on Tindie](https://www.tindie.com/products/todbot/pico_test_synth/)
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## JLCPCB
+
+
+
+https://jlcpcb.com/
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Cost breakdown
+
+<split even>
+<div class="small">
+
+Final run:
+
+- JLCPCB Boards : $158.89 for 20
+- Addons: $254.94 for 20
+- Headers: $20 for 20
+- Jacks: free (from PS1)
+
+</div>
+
+<div class="small">
+
+Development costs:
+
+- $65 (jlcpcb)
+- $51 (screens+i2s+pots)
+- $44 (picos)
+
+Total cost of development:
+$160
+
+</div>
+</split>
+
+Per board:
+- $22 / board
+- $8 / support for development
+- $5 / support for PS1 electronics lab
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Next steps
+- CPU v2 : The RP2350 - yes but no
+- Share your code and changes
+[Github workshop](https://github.com/bjonnh/2024_emmg_workshop_midi)
+
+- Velocity sensitive pads
+[Handcrafting sensors](https://cdn-shop.adafruit.com/datasheets/HandcraftingSensors.pdf)
+
+- Prototyping: 
+
+[Adafruit](https://www.adafruit.com/)
+can be found often at Microcenter as well.
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Similar things
+
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/AVurAVEAFNo?si=gXB9GJ0Xwgc_kRHb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<div class="small">
+
+$149 - Code is Open Source (MIT)
+ [Zeptocore](https://zeptocore.com/)
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<img src="01_project/01_arts/02_musique/01_emmg/controller workshop/Pasted image 20240922170601.png" alt="" style="object-fit: scale-down">
+
+
+<div class="small">
+
+
+$90 - Code is Open Source (MIT) could run on this platform
+
+[Picocore](https://infinitedigits.co/wares/pikocore/)
+
+</div>
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+- MIDI controller libraries
+
+C++/Arduino: https://github.com/tttapa/Control-Surface
+<div class="small">
+
+Good if you want to make just a controller, abstracts much of the pain away.
+</div>
+
+```
+#include <Control_Surface.h>
+
+USBMIDI_Interface midi;
+CCPotentiometer pot { A0, MIDI_CC::General_Purpose_Controller_1 };
+
+void setup() { Control_Surface.begin(); }
+void loop() { Control_Surface.loop(); }
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="" style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+
+<div class="small">
+
+```cpp
+#include <Control_Surface.h>  // Include the library
+ 
+USBMIDI_Interface midi;  // Instantiate a MIDI Interface to use
+ 
+// Instantiate an analog multiplexer
+CD74HC4051 mux {
+  A0,       // Analog input pin
+  {3, 4, 5} // Address pins S0, S1, S2
+};
+ 
+// Create an array of CCPotentiometer objects that send out MIDI Control Change 
+// messages when you turn the potentiometers connected to the 8 inputs of the mux.
+CCPotentiometer volumePotentiometers[] {
+  { mux.pin(0), { MIDI_CC::Channel_Volume, Channel_1 } },
+  { mux.pin(1), { MIDI_CC::Channel_Volume, Channel_2 } },
+  { mux.pin(2), { MIDI_CC::Channel_Volume, Channel_3 } },
+  { mux.pin(3), { MIDI_CC::Channel_Volume, Channel_4 } },
+  { mux.pin(4), { MIDI_CC::Channel_Volume, Channel_5 } },
+  { mux.pin(5), { MIDI_CC::Channel_Volume, Channel_6 } },
+  { mux.pin(6), { MIDI_CC::Channel_Volume, Channel_7 } },
+  { mux.pin(7), { MIDI_CC::Channel_Volume, Channel_8 } },
+};
+ 
+void setup() {
+  Control_Surface.begin();  // Initialize the Control Surface
+}
+
+void loop() {
+  Control_Surface.loop();  // Update the Control Surface
+}
+```
+
+</div>
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" template="" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 960px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Take home messages
+- Doing electronics is easy : break it down in tiny parts
+- It has never been easier
+</div></script></section></div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/math/math.js"></script>
+    <script src="plugin/mermaid/mermaid.js"></script>
+    <script src="plugin/chart/chart.min.js"></script>
+    <script src="plugin/chart/plugin.js"></script>
+    <script src="plugin/customcontrols/plugin.js"></script>
+
+    <script>
+        function extend() {
+            const target = {};
+            for (let i = 0; i < arguments.length; i++) {
+                const source = arguments[i];
+                for (const key in source) {
+                    if (source.hasOwnProperty(key)) {
+                        target[key] = source[key];
+                    }
+                }
+            }
+            return target;
+        }
+
+        function isLight(color) {
+            let hex = color.replace('#', '');
+
+            // convert #fff => #ffffff
+            if (hex.length == 3) {
+                hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+            }
+
+            const c_r = parseInt(hex.substr(0, 2), 16);
+            const c_g = parseInt(hex.substr(2, 2), 16);
+            const c_b = parseInt(hex.substr(4, 2), 16);
+            const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+            return brightness > 155;
+        }
+
+        const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+
+        if (isLight(bgColor)) {
+            document.body.classList.add('has-light-background');
+        } else {
+            document.body.classList.add('has-dark-background');
+        }
+
+        // default options to init reveal.js
+        const defaultOptions = {
+            controls: true,
+            progress: true,
+            history: true,
+            center: true,
+            transition: 'default', // none/fade/slide/convex/concave/zoom
+            plugins: [
+                RevealMarkdown,
+                RevealHighlight,
+                RevealZoom,
+                RevealNotes,
+                RevealMath.MathJax3,
+                RevealMermaid,
+                RevealChart,
+                RevealCustomControls,
+            ],
+            allottedTime: 120 * 1000,
+            mathjax3: {
+                mathjax: 'plugin/math/mathjax/tex-mml-chtml.js',
+            },
+            markdown: {
+                gfm: true,
+                mangle: true,
+                pedantic: false,
+                smartLists: false,
+                smartypants: false,
+            },
+            mermaid: {
+                theme: isLight ? 'default' : 'dark',
+            },
+            customcontrols: {
+                controls: [
+                ]
+            },
+        };
+
+        if ( pageInIframe() ) {
+            defaultOptions.scrollActivationWidth = 5;
+        }
+
+        // options from URL query string
+        const queryOptions = Reveal().getQueryHash() || {};
+
+        const options = extend(defaultOptions, {"controls":false,"progress":false,"slideNumber":false,"center":true,"transition":"none","transitionSpeed":"default","width":960,"height":700,"margin":0.04,"mermaid":{"themeVariables":{"fontSize":"32px"},"theme":"dark"}}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+</body>
+
+<!-- created with Slides Extended -->
+</html>
