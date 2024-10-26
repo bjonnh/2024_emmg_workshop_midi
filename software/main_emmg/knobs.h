@@ -30,6 +30,63 @@ private:
   float filtered_value;
 };
 
+class HysteresisFilter {
+public:
+  HysteresisFilter(uint16_t threshold);
+
+  uint8_t apply(uint16_t value);
+
+private:
+  uint16_t threshold;
+  uint8_t previous_value;
+};
+
+
+template <uint8_t Bits, class T_in = uint16_t, class T_out = uint8_t>
+class Hysteresis {
+  public:
+    /**
+     * @brief   Update the hysteresis output with a new input value.
+     *
+     * @param   inputLevel
+     *          The input to calculate the output level from.
+     * @retval  true
+     *          The output level has changed.
+     * @retval  false
+     *          The output level is still the same.
+     */
+    bool update(T_in inputLevel) {
+        T_in prevLevelFull = (T_in(prevLevel) << Bits) | offset;
+        T_in lowerbound = prevLevel > 0 ? prevLevelFull - margin : 0;
+        T_in upperbound = prevLevel < max_out ? prevLevelFull + margin : max_in;
+        if (inputLevel < lowerbound || inputLevel > upperbound) {
+            setValue(inputLevel);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief   Get the current output level.
+     *
+     * @return  The output level.
+     */
+    T_out getValue() const { return prevLevel; }
+
+    /** 
+     * @brief   Forcefully update the internal state to the given level.
+     */
+    void setValue(T_in inputLevel) { prevLevel = inputLevel >> Bits; }
+
+  private:
+    T_out prevLevel = 0;
+    constexpr static T_in margin = (1ul << Bits) - 1ul;
+    constexpr static T_in offset = Bits >= 1 ? 1ul << (Bits - 1) : 0;
+    constexpr static T_in max_in = static_cast<T_in>(-1);
+    constexpr static T_out max_out = static_cast<T_out>(max_in >> Bits);
+    static_assert(max_in > 0, "Error: only unsigned types are supported");
+};
+
 class Knobs {
 public:
   Knobs();
@@ -43,7 +100,7 @@ private:
   int direct_read(int knob);
   int num_address_pins;
   int num_knobs;
-  LowPassFilter* filters[NUMBER_OF_KNOBS];
+  Hysteresis<7, uint16_t, uint8_t>* filters[NUMBER_OF_KNOBS];
   int values[NUMBER_OF_KNOBS];
   uint8_t knobs_analog_pin = KNOBS_ANALOG_PIN;
   uint8_t knobs_analog_pin_index = KNOBS_ANALOG_PIN_INDEX;

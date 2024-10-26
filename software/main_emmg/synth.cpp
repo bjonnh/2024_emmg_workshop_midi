@@ -252,9 +252,9 @@ void __not_in_flash_func(SynthMode::handleKnob)(uint8_t knob, uint8_t value) {
 
 void __not_in_flash_func(SynthMode::handleTouch)(uint8_t pad, uint8_t value) {
   if (value) {
-    g_synth.note_on(50 + pad, 127);
+    g_synth.note_on(48 + pad, 127);
   } else {
-    g_synth.note_off(50 + pad);
+    g_synth.note_off(48 + pad);
   }
 }
 

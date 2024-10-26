@@ -32,6 +32,21 @@ uint8_t LowPassFilter::apply(int value) {
   return filtered_value;
 }
 
+// An hysteresis filter, more efficient than the lowpass to avoid values shaking
+HysteresisFilter::HysteresisFilter(uint16_t threshold) 
+    : threshold(threshold), previous_value(0) {}
+
+uint8_t HysteresisFilter::apply(uint16_t value) {
+  uint16_t scaled_value = value >> 5; // Convert from 0-4095 to 0-127
+
+  if (previous_value == 0 || 
+      abs(int(scaled_value) - int(previous_value)) > threshold) {
+    previous_value = scaled_value;
+  }
+
+  return previous_value;
+}
+
 // Knobs implementation
 Knobs::Knobs()
   : num_address_pins(KNOBS_ADDRESS_SIZE), num_knobs(NUMBER_OF_KNOBS) {
@@ -41,7 +56,7 @@ void Knobs::begin() {
   adc_init();
   adc_gpio_init(knobs_analog_pin);
   for (int i = 0; i < num_knobs; i++) {
-    filters[i] = new LowPassFilter();
+    filters[i] = new Hysteresis<7, uint16_t, uint8_t>();
   }
   analogReadResolution(12);
   for (int i = 0; i < num_address_pins; i++) {
@@ -79,11 +94,15 @@ inline int Knobs::direct_read(int knob) {
     gpio_put(address_pins[j], addresses[knob][j]);
   }
   delayMicroseconds(5);
-  int value = adc_read();
+  uint32_t value = adc_read();
+  value += adc_read();
+  value += adc_read();
+  value += adc_read();
 
-  int raw_value = 130 - map(value, 100, 3900, 0, 130);  // 12-bit ADC max value is 4095
+  int raw_value = 16384-map(value, 400, 16000, 0, 16383);  // 12-bit ADC max value is 4095 - We are negleting the edges as those post have wide tolerances
   if (raw_value < 0) raw_value = 0;
-  uint8_t filtered_value = filters[knob]->apply(raw_value);
+  filters[knob]->update(raw_value);
+  uint16_t filtered_value = filters[knob]->getValue();
   if (filtered_value > 127) filtered_value = 127;
   values[knob] = filtered_value;
   return values[knob];

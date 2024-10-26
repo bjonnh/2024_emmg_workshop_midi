@@ -4,4 +4,7 @@ The controller works fine using default parameters. But the synthesizer is much 
 The synthesizer is coming from the excellent:
 https://github.com/risgk/digital-synth-pra32-u
 
+I am also using the hysteris filter from:
+https://github.com/tttapa/Control-Surface
+
 
