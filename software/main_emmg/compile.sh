@@ -4,4 +4,3 @@ arduino-cli lib install "MIDI Library"
 arduino-cli lib install "Adafruit GFX Library"
 arduino-cli lib install "Adafruit SSD1306"
 mkdir -p build ; arduino-cli compile --output-dir build
-

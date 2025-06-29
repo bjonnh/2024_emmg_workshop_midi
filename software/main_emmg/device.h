@@ -44,6 +44,9 @@ public:
 
   void setHandleNoteOn(void (*)(byte channel, byte pitch, byte velocity));
   void setHandleNoteOff(void (*)(byte channel, byte pitch, byte velocity));
+  void setHandleControlChange(void (*)(byte channel, byte number, byte value));
+  void setHandleProgramChange(void (*)(byte channel, byte number));
+  void setHandlePitchBend(void (*)(byte channel, int bend));
   
   Display display;
 

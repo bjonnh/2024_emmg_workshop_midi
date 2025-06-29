@@ -65,6 +65,15 @@ void SynthMode::begin() {
   device.setHandleNoteOff([](byte channel, byte pitch, byte velocity) {
     SynthModeInstance->handleNoteOff(channel, pitch, velocity);
   });
+  device.setHandleControlChange([](byte channel, byte number, byte value) {
+    SynthModeInstance->handleControlChange(channel, number, value);
+  });
+  device.setHandleProgramChange([](byte channel, byte number) {
+    SynthModeInstance->handleProgramChange(channel, number);
+  });
+  device.setHandlePitchBend([](byte channel, int bend) {
+    SynthModeInstance->handlePitchBend(channel, bend);
+  });
 }
 
 void SynthMode::setup_core1() {}
@@ -122,7 +131,23 @@ void __not_in_flash_func(SynthMode::handleControlChange)(byte channel, byte numb
 
 void __not_in_flash_func(SynthMode::handleProgramChange)(byte channel, byte number) {
   if ((channel - 1) == PRA32_U_MIDI_CH) {
-    g_synth.program_change(number);
+    // Limit program number to valid range (0-15 or 128 for random)
+    uint8_t program = number;
+    if (program > 15 && program != 128) {
+      program = program % 16;  // Wrap around if > 15
+    }
+    
+    if (current_program != program) {
+      g_synth.program_change(program);
+      updateAll();
+      for (uint8_t param = 0; param < 7; param++) {
+        params_crossed[param] = false;
+        current_values[param] = g_synth.current_controller_value(SynthParameters::Interface1.pages[current_page].params[param].cc);
+        direction[param] = device.getKnobValue(param + 1) < current_values[param];
+      }
+      current_program = program;
+      updated = true;
+    }
   }
 }
 

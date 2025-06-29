@@ -41,7 +41,8 @@ private:
   uint8_t previous_value;
 };
 
-
+// That Hysteresis class is from https://github.com/tttapa/Control-Surface
+// GPL v3
 template <uint8_t Bits, class T_in = uint16_t, class T_out = uint8_t>
 class Hysteresis {
   public:

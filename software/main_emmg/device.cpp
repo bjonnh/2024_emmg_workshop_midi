@@ -186,3 +186,24 @@ void Device::setHandleNoteOff(void (*f)(byte channel, byte pitch, byte velocity)
   }
   MIDI_IF_1.setHandleNoteOff(f);
 }
+
+void Device::setHandleControlChange(void (*f)(byte channel, byte number, byte value)) {
+  if (TinyUSBDevice.mounted()) {
+    MIDI->setHandleControlChange(f);
+  }
+  MIDI_IF_1.setHandleControlChange(f);
+}
+
+void Device::setHandleProgramChange(void (*f)(byte channel, byte number)) {
+  if (TinyUSBDevice.mounted()) {
+    MIDI->setHandleProgramChange(f);
+  }
+  MIDI_IF_1.setHandleProgramChange(f);
+}
+
+void Device::setHandlePitchBend(void (*f)(byte channel, int bend)) {
+  if (TinyUSBDevice.mounted()) {
+    MIDI->setHandlePitchBend(f);
+  }
+  MIDI_IF_1.setHandlePitchBend(f);
+}
