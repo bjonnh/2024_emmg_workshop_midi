@@ -128,11 +128,17 @@ void __not_in_flash_func(SynthMode::handleControlChange)(byte channel, byte numb
     // Check for CC 99 to control MIDI mode
     if (number == 99) {
       if (value > 64) {
-        current_state = SynthModeState::MIDI_CONTROLLED;
-        updated = true;
+        if (current_state != SynthModeState::MIDI_CONTROLLED) {
+          current_state = SynthModeState::MIDI_CONTROLLED;
+          midi_controlled_display_shown = false;  // Force display update
+          updated = true;
+        }
       } else {
-        current_state = SynthModeState::NORMAL;
-        updated = true;
+        if (current_state != SynthModeState::NORMAL) {
+          current_state = SynthModeState::NORMAL;
+          midi_controlled_display_shown = false;  // Reset for next time
+          updated = true;
+        }
       }
     }
     
@@ -170,8 +176,13 @@ void __not_in_flash_func(SynthMode::handleProgramChange)(byte channel, byte numb
       updateAll();
       for (uint8_t param = 0; param < 7; param++) {
         params_crossed[param] = false;
-        current_values[param] = g_synth.current_controller_value(SynthParameters::Interface1.pages[current_page].params[param].cc);
-        direction[param] = device.getKnobValue(param + 1) < current_values[param];
+        if (param < SynthParameters::Interface1.pages[current_page].paramsCount) {
+          current_values[param] = g_synth.current_controller_value(SynthParameters::Interface1.pages[current_page].params[param].cc);
+          direction[param] = device.getKnobValue(param + 1) < current_values[param];
+        } else {
+          current_values[param] = 0;
+          direction[param] = false;
+        }
       }
       current_program = program;
       updated = true;
@@ -197,6 +208,11 @@ void __not_in_flash_func(SynthMode::updateAll)() {
 }
 
 void __not_in_flash_func(SynthMode::handleKnob)(uint8_t knob, uint8_t value) {
+  // Skip knob processing in MIDI control mode
+  if (current_state == SynthModeState::MIDI_CONTROLLED) {
+    return;
+  }
+  
   uint8_t program = 0;
   const SynthParameters::Page* page = &(SynthParameters::Interface1.pages[current_page]);
   bool crossed = false;
@@ -219,8 +235,13 @@ void __not_in_flash_func(SynthMode::handleKnob)(uint8_t knob, uint8_t value) {
           updateAll();
           for (uint8_t param = 0; param < 7; param++) {
             params_crossed[param] = false;
-            current_values[param] = g_synth.current_controller_value(SynthParameters::Interface1.pages[current_page].params[param].cc);
-            direction[param] = device.getKnobValue(param) < current_values[param];
+            if (param < SynthParameters::Interface1.pages[current_page].paramsCount) {
+              current_values[param] = g_synth.current_controller_value(SynthParameters::Interface1.pages[current_page].params[param].cc);
+              direction[param] = device.getKnobValue(param) < current_values[param];
+            } else {
+              current_values[param] = 0;
+              direction[param] = false;
+            }
           }
           current_program = program;
           updated = true;
@@ -233,14 +254,24 @@ void __not_in_flash_func(SynthMode::handleKnob)(uint8_t knob, uint8_t value) {
           // param is knob - 1 as we don't use the first knob
           for (uint8_t param = 0; param < 7; param++) {
             params_crossed[param] = false;
-            current_values[param] = g_synth.current_controller_value(SynthParameters::Interface1.pages[current_page].params[param].cc);
-            direction[param] = device.getKnobValue(param) < current_values[param];
+            if (param < SynthParameters::Interface1.pages[current_page].paramsCount) {
+              current_values[param] = g_synth.current_controller_value(SynthParameters::Interface1.pages[current_page].params[param].cc);
+              direction[param] = device.getKnobValue(param) < current_values[param];
+            } else {
+              current_values[param] = 0;
+              direction[param] = false;
+            }
           }
           updated = true;
         }
       }
       break;
     default:
+      // Check if this knob has a parameter on the current page
+      if (knob - 1 >= page->paramsCount) {
+        return;  // No parameter for this knob on current page
+      }
+      
       if (!params_crossed[knob - 1]) {
         if (direction) {
           // we have to go lower than current value to cross
@@ -312,24 +343,27 @@ void __not_in_flash_func(SynthMode::handleTouch)(uint8_t pad, uint8_t value) {
 }
 
 void __not_in_flash_func(SynthMode::updateDisplay)() {
-  // If in MIDI controlled mode, just show static message
+  // If in MIDI controlled mode, only update display once
   if (current_state == SynthModeState::MIDI_CONTROLLED) {
-    switch (current_update_phase) {
-      case 0:
-        device.display.adisplay->clearDisplay();
-        device.display.adisplay->setFont(&FreeSans9pt7b);
-        device.display.adisplay->setTextSize(1);
-        device.display.adisplay->setTextColor(SSD1306_WHITE);
-        device.display.adisplay->setCursor(10, 35);
-        device.display.adisplay->print("MIDI Controlled");
-        break;
-      case 1:
-        device.display.adisplay->display();
-        updated = false;
-        break;
+    if (!midi_controlled_display_shown) {
+      switch (current_update_phase) {
+        case 0:
+          device.display.adisplay->clearDisplay();
+          device.display.adisplay->setFont(&FreeSans9pt7b);
+          device.display.adisplay->setTextSize(1);
+          device.display.adisplay->setTextColor(SSD1306_WHITE);
+          device.display.adisplay->setCursor(10, 35);
+          device.display.adisplay->print("MIDI Controlled");
+          break;
+        case 1:
+          device.display.adisplay->display();
+          updated = false;
+          midi_controlled_display_shown = true;  // Mark as shown
+          break;
+      }
+      current_update_phase++;
+      current_update_phase = current_update_phase % 2;
     }
-    current_update_phase++;
-    current_update_phase = current_update_phase % 2;
     return;
   }
   

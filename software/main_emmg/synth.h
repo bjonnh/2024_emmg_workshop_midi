@@ -189,6 +189,7 @@ private:
   Storage storage;
   SynthModeState current_state = SynthModeState::NORMAL;
   bool ready = false;
+  bool midi_controlled_display_shown = false;  // Track if MIDI control display has been shown
 };
 
 

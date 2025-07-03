@@ -125,19 +125,19 @@ void Device::setButtonCallback(void (*callback)(uint8_t, uint8_t)) {
   buttonCallback = callback;
 }
 
-void Device::triggerKnobCallback(uint8_t index, uint8_t value) {
+void __not_in_flash_func(Device::triggerKnobCallback)(uint8_t index, uint8_t value) {
   if (knobCallback) {
     knobCallback(index, value);
   }
 }
 
-void Device::triggerTouchPadCallback(uint8_t index, uint8_t value) {
+void __not_in_flash_func(Device::triggerTouchPadCallback)(uint8_t index, uint8_t value) {
   if (touchPadCallback) {
     touchPadCallback(index, value);
   }
 }
 
-void Device::triggerButtonCallback(uint8_t index, uint8_t value) {
+void __not_in_flash_func(Device::triggerButtonCallback)(uint8_t index, uint8_t value) {
   if (buttonCallback) {
     buttonCallback(index, value);
   }
