@@ -26,6 +26,7 @@
 
 enum class SynthModeState {
   NORMAL,
+  MIDI_CONTROLLED,
 };
 
 
@@ -178,6 +179,11 @@ private:
   bool params_crossed[7] = { false };
   bool direction[7] = { false };      // false, you have to go above or equal current_values to catch
   uint8_t current_values[7] = { 0 };  // The current values inside the synth so we can do a crossing
+  
+  // CC throttling to prevent overwhelming the synth
+  uint8_t last_cc_values[128] = { 0 };
+  uint32_t last_cc_time[128] = { 0 };
+  static constexpr uint32_t CC_THROTTLE_MS = 10;  // Minimum time between same CC updates
 
   Device& device;
   Storage storage;

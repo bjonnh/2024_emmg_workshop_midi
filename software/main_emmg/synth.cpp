@@ -125,6 +125,34 @@ void __not_in_flash_func(SynthMode::handleNoteOff)(byte channel, byte pitch, byt
 
 void __not_in_flash_func(SynthMode::handleControlChange)(byte channel, byte number, byte value) {
   if ((channel - 1) == PRA32_U_MIDI_CH) {
+    // Check for CC 99 to control MIDI mode
+    if (number == 99) {
+      if (value > 64) {
+        current_state = SynthModeState::MIDI_CONTROLLED;
+        updated = true;
+      } else {
+        current_state = SynthModeState::NORMAL;
+        updated = true;
+      }
+    }
+    
+    // Throttle CC updates to prevent overwhelming the synth
+    uint32_t current_time = millis();
+    if (number < 128) {
+      // Skip if same value
+      if (last_cc_values[number] == value) {
+        return;
+      }
+      
+      // Skip if too soon since last update for this CC
+      if (current_time - last_cc_time[number] < CC_THROTTLE_MS) {
+        return;
+      }
+      
+      last_cc_values[number] = value;
+      last_cc_time[number] = current_time;
+    }
+    
     g_synth.control_change(number, value);
   }
 }
@@ -284,6 +312,28 @@ void __not_in_flash_func(SynthMode::handleTouch)(uint8_t pad, uint8_t value) {
 }
 
 void __not_in_flash_func(SynthMode::updateDisplay)() {
+  // If in MIDI controlled mode, just show static message
+  if (current_state == SynthModeState::MIDI_CONTROLLED) {
+    switch (current_update_phase) {
+      case 0:
+        device.display.adisplay->clearDisplay();
+        device.display.adisplay->setFont(&FreeSans9pt7b);
+        device.display.adisplay->setTextSize(1);
+        device.display.adisplay->setTextColor(SSD1306_WHITE);
+        device.display.adisplay->setCursor(10, 35);
+        device.display.adisplay->print("MIDI Controlled");
+        break;
+      case 1:
+        device.display.adisplay->display();
+        updated = false;
+        break;
+    }
+    current_update_phase++;
+    current_update_phase = current_update_phase % 2;
+    return;
+  }
+  
+  // Normal display mode
   const SynthParameters::Page* page = &(SynthParameters::Interface1.pages[current_page]);
   switch (current_update_phase) {
     case 0:
